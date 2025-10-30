@@ -1,50 +1,56 @@
 /**
  * src/App.tsx
  * 
- * Main application component with routing configuration.
- * Defines all routes and their corresponding components.
+ * Main application component with routing and context provider
  */
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Header from './layouts/Header';
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import Trending from './pages/Trending';
 import Upload from './pages/Upload';
 import Results from './pages/Results';
-import Home from './pages/Home';
-import Header from './layouts/Header';
 import SystemMonitoring from './pages/SystemMonitoring';
+import History from './pages/History';
+import { ReportProvider } from './context/ReportContext';
 
 function App() {
   return (
-    <Router>
-      <Header/>
-      <Routes>
-        {/* Landing Page */}
-        <Route path="/" element={<Landing />} />
+    <ReportProvider>
+      <Router>
+        {/* Header - Persistent across all pages */}
+        <Header />
 
-        <Route path="/home" element={<Home/>} />
+        {/* Main Routes */}
+        <Routes>
+          {/* Landing Page */}
+          <Route path="/" element={<Landing />} />
 
-        {/* Dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
+          {/* Dashboard */}
+          <Route path="/dashboard" element={<Dashboard />} />
 
-        {/* Trending Videos */}
-        <Route path="/trending" element={<Trending />} />
+          {/* Trending Videos */}
+          <Route path="/trending" element={<Trending />} />
 
-        {/* Upload Video */}
-        <Route path="/upload" element={<Upload />} />
+          {/* Upload Media */}
+          <Route path="/upload" element={<Upload />} />
 
-        {/* Results Page */}
-        <Route path="/results" element={<Results />} />
+          {/* Results Page */}
+          <Route path="/results" element={<Results />} />
 
-        {/* Fallback - Redirect to dashboard */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          {/* System Monitoring */}
+          <Route path="/monitoring" element={<SystemMonitoring />} />
 
-        <Route path="/monitoring" element={<SystemMonitoring />} />
+          {/* History */}
+          <Route path="/history" element={<History />} />
 
-      </Routes>
-    </Router>
+          {/* Fallback - Redirect to dashboard */}
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Router>
+    </ReportProvider>
   );
 }
 

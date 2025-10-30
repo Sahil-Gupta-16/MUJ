@@ -21,8 +21,10 @@ import {
   TrendingUp,
   BarChart3,
   ChevronDown,
+  Book,
 } from 'lucide-react';
 import theme from '../config/theme';
+import path from 'path';
 
 // Navigation items with icons
 const navItems = [
@@ -30,6 +32,7 @@ const navItems = [
   { path: '/trending', label: 'Trending', icon: TrendingUp },
   { path: '/upload', label: 'Upload', icon: Upload },
   { path: '/monitoring', label: 'Monitoring', icon: Upload },
+  { path: '/history', label: 'History', icon: Book },
 ];
 
 const Header: React.FC = () => {

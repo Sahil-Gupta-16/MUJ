@@ -3,14 +3,17 @@
  * 
  * Professional media upload page supporting both video and image files.
  * Features drag-and-drop, animations, and detailed deepfake detection results.
+ * Automatically saves analysis to history when completed.
  */
 
 import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload as UploadIcon, File, CheckCircle, AlertCircle, Download, X, Image as ImageIcon } from 'lucide-react';
 import DashboardLayout from '../layouts/DashboardLayout';
 import StatsCard from '../components/StatsCard';
 import theme from '../config/theme';
+import { useReports } from '../context/ReportContext';
 
 interface ScanResult {
   mediaName: string;
@@ -20,6 +23,7 @@ interface ScanResult {
   details: Array<{ label: string; score: string }>;
   uploadTime: string;
   thumbnail: string;
+  processingTime: string;
 }
 
 // Reusable Result Card Component
@@ -85,6 +89,8 @@ const DetailItem: React.FC<{
 };
 
 const Upload: React.FC = () => {
+  const navigate = useNavigate();
+  const { addReport } = useReports();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -147,11 +153,14 @@ const Upload: React.FC = () => {
       setUploading(false);
       const isFake = Math.random() > 0.5;
       const mediaType = getMediaType(file);
-      setResult({
+      const processingTime = (Math.random() * 3 + 1).toFixed(1) + 's';
+      const confidence = Math.floor(Math.random() * 20) + 80;
+
+      const scanResult: ScanResult = {
         mediaName: file.name,
         mediaType,
         isFake,
-        confidence: Math.floor(Math.random() * 20) + 80,
+        confidence,
         thumbnail: 'https://via.placeholder.com/400x300/3b82f6/FFFFFF?text=Scanned+Media',
         details: [
           { label: 'Lip-sync analysis', score: isFake ? 'High' : 'Low' },
@@ -162,6 +171,28 @@ const Upload: React.FC = () => {
           { label: 'Frequency analysis', score: isFake ? 'Medium' : 'High' },
         ],
         uploadTime: new Date().toLocaleString(),
+        processingTime,
+      };
+
+      setResult(scanResult);
+
+      // Add to history
+      const models = ['COLOR-CUES-LSTM-V1', 'EFFICIENTNET-B7-V1', 'EYEBLINK-CNN-LSTM-V1', 'DISTIL-DIRE-V1', 'CROSS-EFFICIENT-VIT-GAN'];
+      const selectedModel = models[Math.floor(Math.random() * models.length)];
+
+      addReport({
+        mediaName: file.name,
+        mediaType,
+        title: isFake ? 'Deepfake Detected - ' + file.name : 'Authentic Content - ' + file.name,
+        channel: 'User Upload',
+        confidence,
+        isFake,
+        status: 'completed',
+        processingTime,
+        timestamp: new Date().toISOString(),
+        fileSize: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+        model: selectedModel,
+        views: '0',
       });
     }, 3500);
   };
@@ -187,7 +218,7 @@ const Upload: React.FC = () => {
   return (
     <DashboardLayout>
       <motion.div
-        className="max-w-screen mx-auto"
+        className="max-w-screen px-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -207,23 +238,23 @@ const Upload: React.FC = () => {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <StatsCard 
-            title="Total Uploads" 
-            value="2,547" 
+          <StatsCard
+            title="Total Uploads"
+            value="2,547"
             icon={<UploadIcon size={24} />}
-            color={theme.colors.primary} 
+            color={theme.colors.primary}
           />
-          <StatsCard 
-            title="Avg Scan Time" 
-            value="3.2s" 
+          <StatsCard
+            title="Avg Scan Time"
+            value="3.2s"
             icon={<File size={24} />}
-            color={theme.colors.accent} 
+            color={theme.colors.accent}
           />
-          <StatsCard 
-            title="Success Rate" 
-            value="99.1%" 
+          <StatsCard
+            title="Success Rate"
+            value="99.1%"
             icon={<CheckCircle size={24} />}
-            color={theme.colors.success} 
+            color={theme.colors.success}
           />
         </div>
 
@@ -453,6 +484,9 @@ const Upload: React.FC = () => {
                       transition={{ duration: 1, delay: 0.3 }}
                     />
                   </div>
+                  <div className="mt-3 text-sm" style={{ color: theme.colors.textSecondary }}>
+                    Processing Time: {result.processingTime}
+                  </div>
                 </div>
 
                 {/* Detailed Analysis using DetailItem cards */}
@@ -469,6 +503,22 @@ const Upload: React.FC = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* Success Message */}
+                <motion.div
+                  className="p-4 rounded-lg mb-6"
+                  style={{
+                    backgroundColor: theme.colors.success + '20',
+                    border: `2px solid ${theme.colors.success}`,
+                  }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <p style={{ color: theme.colors.success }} className="font-semibold text-sm">
+                    ✓ Report automatically saved to history
+                  </p>
+                </motion.div>
 
                 {/* Download Button */}
                 <motion.button
