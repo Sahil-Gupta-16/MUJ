@@ -14,7 +14,7 @@ import Loading from '../components/Loading';
 // Reusable animated Section component
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <motion.section
-    className="max-w-6xl mx-auto my-20 px-6"
+    className="max-w-screen mx-auto my-20 px-6"
     initial={{ opacity: 0, y: 50 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}

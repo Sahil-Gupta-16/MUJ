@@ -9,9 +9,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, TrendingUp, Clock, AlertTriangle } from 'lucide-react';
-import DashboardLayout from '../layouts/DashoardLayout';
+import DashboardLayout from '../layouts/DashboardLayout';
 import VideoCard from '../components/VideoCard';
-import StatsCard from '../components/StatCard';
+import StatsCard from '../components/StatsCard';
 import theme from '../config/theme';
 
 interface VideoScan {

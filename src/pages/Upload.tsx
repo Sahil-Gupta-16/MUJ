@@ -8,8 +8,8 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload as UploadIcon, File, CheckCircle, AlertCircle, Download, X } from 'lucide-react';
-import DashboardLayout from '../layouts/DashoardLayout';
-import StatsCard from '../components/StatCard';
+import DashboardLayout from '../layouts/DashboardLayout';
+import StatsCard from '../components/StatsCard';
 import theme from '../config/theme';
 
 interface ScanResult {
@@ -177,7 +177,7 @@ const Upload: React.FC = () => {
   return (
     <DashboardLayout>
       <motion.div
-        className="max-w-5xl mx-auto"
+        className="max-w-screen mx-auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}

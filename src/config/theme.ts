@@ -1,48 +1,96 @@
 /**
  * theme.ts
  * 
- * Centralized theme configuration with brown and beige color palette.
- * Professional, warm, and sophisticated design tokens for the Deepfake Detection Framework.
- * Supports light mode with earthy, neutral tones that convey trust and elegance.
+ * Centralized theme configuration with blue-emerald civic admin dashboard palette.
+ * Professional design tokens conveying trust, authority, and modern UI/UX standards.
+ * Comprehensive gradient system for sophisticated visual hierarchy.
  */
 
 const theme = {
   colors: {
-    // Background colors - warm beige for clean, sophisticated look
+    // Background colors
     background: {
-      light: '#FAF5EF',      // Soft warm beige (main background)
-    //   dark: '#8B5A3C',       // Rich brown for accents or future dark mode
+      light: '#ffffff',      // Pure white for clean look
+      gradient: 'linear-gradient(to bottom right, #eff6ff, #ffffff, #ecfdf5)', // Blue-emerald gradient
     },
     
-    // Primary color - medium warm brown for buttons and highlights
-    primary: '#7E513B',       // Warm terracotta brown - main interactive elements
+    // Primary - Blue gradient system for trust and authority
+    primary: '#3b82f6',       // Blue-500 - main interactive elements
     
-    // Secondary color - lighter brown for borders, secondary UI
-    secondary: '#C8B6A6',     // Light taupe brown for subtle elements
+    // Secondary - Emerald for success and growth
+    secondary: '#10b981',     // Emerald-500 for secondary UI
     
     // Text colors
-    textPrimary: '#3E2723',   // Deep dark brown for primary text (high contrast)
-    textSecondary: '#6D4C41', // Medium brown for secondary text
+    textPrimary: '#0f172a',   // Slate-900 for primary text (high contrast)
+    textSecondary: '#64748b', // Slate-500 for secondary text
     
     // Accent and status colors
-    accent: '#D4A574',        // Golden beige for special highlights
+    accent: '#a855f7',        // Purple-500 for special highlights
     
-    error: '#C1694F',         // Muted terracotta red for errors
-    success: '#8B9474',       // Sage olive green for success (complements brown)
-    warning: '#D4A056',       // Golden amber for warnings
+    error: '#ef4444',         // Red-500 for errors
+    success: '#22c55e',       // Green-500 for success
+    warning: '#eab308',       // Yellow-500 for warnings
+    info: '#3b82f6',          // Blue-500 for info
     
-    // Neutral shades for cards, borders, and dividers
+    // Neutral shades - Slate scale
     neutral: {
-      lightest: '#F5F0E8',    // Very light beige for card backgrounds
-      light: '#E8DED2',       // Light beige for hover states
-      medium: '#D1C4B5',      // Medium beige for borders
-      dark: '#A89583',        // Darker neutral for subtle text
+      lightest: '#f8fafc',    // Slate-50 for card backgrounds
+      light: '#e2e8f0',       // Slate-200 for hover states
+      medium: '#cbd5e1',      // Slate-300 for borders
+      dark: '#64748b',        // Slate-500 for subtle text
+    },
+    
+    // Extended color palette for badges and status
+    blue: {
+      50: '#eff6ff',
+      100: '#dbeafe',
+      200: '#bfdbfe',
+      400: '#60a5fa',
+      500: '#3b82f6',
+      600: '#2563eb',
+      800: '#1e40af',
+    },
+    
+    emerald: {
+      50: '#ecfdf5',
+      100: '#d1fae5',
+      200: '#a7f3d0',
+      500: '#10b981',
+      600: '#059669',
+      800: '#065f46',
+    },
+    
+    purple: {
+      50: '#faf5ff',
+      100: '#f3e8ff',
+      200: '#e9d5ff',
+      500: '#a855f7',
+      600: '#9333ea',
+    },
+    
+    yellow: {
+      50: '#fefce8',
+      100: '#fef9c3',
+      500: '#eab308',
+    },
+    
+    orange: {
+      50: '#fff7ed',
+      100: '#ffedd5',
+      600: '#ea580c',
     },
   },
   
+  // Gradient patterns
+  gradients: {
+    primary: 'linear-gradient(to right, #3b82f6, #10b981)',
+    background: 'linear-gradient(to bottom right, #eff6ff, #ffffff, #ecfdf5)',
+    card: 'linear-gradient(to bottom right, #eff6ff, #f0fdf4)',
+  },
+  
   fonts: {
-    base: '"Inter", "Roboto", "Helvetica Neue", Arial, sans-serif', // Clean modern sans-serif
-    heading: '"Playfair Display", "Georgia", serif',                 // Elegant serif for headings (optional)
+    base: '"Inter", "Roboto", "Helvetica Neue", Arial, sans-serif',
+    heading: '"Inter", "Roboto", sans-serif',
   },
   
   spacing: {
@@ -56,17 +104,17 @@ const theme = {
   
   borderRadius: {
     sm: '4px',
-    md: '8px',
-    lg: '12px',
-    xl: '16px',
+    md: '6px',
+    lg: '8px',
+    xl: '12px',
     full: '9999px',
   },
   
   shadows: {
-    sm: '0 1px 3px rgba(62, 39, 35, 0.12)',
-    md: '0 4px 6px rgba(62, 39, 35, 0.15)',
-    lg: '0 10px 20px rgba(62, 39, 35, 0.2)',
-    xl: '0 20px 40px rgba(62, 39, 35, 0.25)',
+    sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+    md: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
   },
   
   transition: 'all 0.3s ease-in-out',

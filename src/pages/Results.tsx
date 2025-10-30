@@ -57,7 +57,7 @@ ${scanReportJson.details.map(d => `- ${d.label}: ${d.score}`).join('\n')}
   if (!report) return <p>Loading report...</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-4 space-y-6 bg-gray-50 dark:bg-gray-800 rounded shadow">
+    <div className="max-w-screen mx-auto p-4 space-y-6 bg-gray-50 dark:bg-gray-800 rounded shadow">
       <h2 className="text-3xl font-bold text-primary mb-4">Scan Results</h2>
 
       <div className="p-4 border border-secondary rounded bg-white dark:bg-gray-700">
