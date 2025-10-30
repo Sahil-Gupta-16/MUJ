@@ -4,9 +4,11 @@
  * Professional video card component with comprehensive data display and rich animations.
  * Shows thumbnail, title, channel, source link, status badge, confidence score, views, and upload date.
  * Features hover effects, animated progress bars, play overlay, and interactive elements.
+ * Navigates to detailed results page on "View Full Analysis" button click.
  */
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Eye, 
@@ -17,7 +19,8 @@ import {
   Play, 
   ExternalLink,
   Shield,
-  Activity
+  Activity,
+  Video
 } from 'lucide-react';
 import theme from '../config/theme';
 
@@ -34,6 +37,7 @@ interface VideoCardProps {
 }
 
 const VideoCard: React.FC<VideoCardProps> = ({
+  id,
   thumbnail,
   title,
   channel,
@@ -44,6 +48,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
   uploadDate,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
   const statusColor = isFake ? theme.colors.error : theme.colors.success;
   const statusText = isFake ? 'Deepfake Detected' : 'Authentic';
   const StatusIcon = isFake ? AlertCircle : CheckCircle;
@@ -52,6 +57,26 @@ const VideoCard: React.FC<VideoCardProps> = ({
   const handleSourceClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     window.open(sourceLink, '_blank', 'noopener,noreferrer');
+  };
+
+  // Navigate to results page with video data
+  const handleViewDetails = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate('/results', { 
+      state: { 
+        videoData: {
+          id,
+          thumbnail,
+          title,
+          channel,
+          sourceLink,
+          isFake,
+          confidence,
+          views,
+          uploadDate,
+        }
+      } 
+    });
   };
 
   return (
@@ -71,28 +96,29 @@ const VideoCard: React.FC<VideoCardProps> = ({
       }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
+      onClick={handleViewDetails}
     >
       {/* Confidence Ring Indicator */}
-        <motion.div
-    className="absolute top-2 right-2 w-14 h-14 rounded-full flex items-center justify-center z-10"
-    style={{
-        background: `conic-gradient(${statusColor} ${confidence * 3.6}deg, ${theme.colors.neutral.light} 0deg)`,
-    }}
-    initial={{ scale: 0, rotate: -180 }}
-    animate={{ scale: 1, rotate: 0 }}
-    transition={{ duration: 0.6, delay: 0.3, type: 'spring' }}
-    whileHover={{ scale: 1.15, rotate: 360 }}
-    >
-    <div
-        className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold shadow-sm"
-        style={{ color: statusColor }}
-    >
-        <div className="text-center">
-        <div className="text-xs leading-none">{confidence}</div>
-        <div className="text-[8px] leading-none">%</div>
+      <motion.div
+        className="absolute top-2 right-2 w-14 h-14 rounded-full flex items-center justify-center z-10"
+        style={{
+          background: `conic-gradient(${statusColor} ${confidence * 3.6}deg, ${theme.colors.neutral.light} 0deg)`,
+        }}
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ duration: 0.6, delay: 0.3, type: 'spring' }}
+        whileHover={{ scale: 1.15, rotate: 360 }}
+      >
+        <div
+          className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold shadow-sm"
+          style={{ color: statusColor }}
+        >
+          <div className="text-center">
+            <div className="text-xs leading-none">{confidence}</div>
+            <div className="text-[8px] leading-none">%</div>
+          </div>
         </div>
-    </div>
-        </motion.div>
+      </motion.div>
 
       {/* Thumbnail Section */}
       <div className="relative overflow-hidden h-52">
@@ -225,8 +251,9 @@ const VideoCard: React.FC<VideoCardProps> = ({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <p className="text-sm font-medium" style={{ color: theme.colors.textSecondary }}>
-            📺 {channel}
+          <p className="text-sm font-medium flex items-center space-x-1" style={{ color: theme.colors.textSecondary }}>
+            <Video size={14} />
+            <span>{channel}</span>
           </p>
           <motion.button
             onClick={handleSourceClick}
@@ -342,6 +369,7 @@ const VideoCard: React.FC<VideoCardProps> = ({
         <AnimatePresence>
           {isHovered && (
             <motion.button
+              onClick={handleViewDetails}
               className="w-full py-2.5 rounded-lg font-semibold text-sm text-white"
               style={{
                 background: `linear-gradient(to right, ${theme.colors.primary}, ${theme.colors.secondary})`,

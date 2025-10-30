@@ -29,6 +29,7 @@ const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: BarChart3 },
   { path: '/trending', label: 'Trending', icon: TrendingUp },
   { path: '/upload', label: 'Upload', icon: Upload },
+  { path: '/monitoring', label: 'Monitoring', icon: Upload },
 ];
 
 const Header: React.FC = () => {

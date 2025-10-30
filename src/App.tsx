@@ -1,39 +1,51 @@
 /**
- * src/app.tsx
+ * src/App.tsx
  * 
- * Modified root app component for light theme only.
- * Removed dark mode toggle logic and dark mode CSS classes.
- * Simplifies UI and enforces consistent light theme.
+ * Main application component with routing configuration.
+ * Defines all routes and their corresponding components.
  */
 
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Home from './pages/Home'
-import Upload from './pages/Upload'
-import Trending from './pages/Trending'
-import NotFound from './pages/NotFound'
-import Landing from './pages/Landing'
-import Dashboard from './pages/Dashboard'
-import Header from './layouts/Header'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Landing from './pages/Landing';
+import Dashboard from './pages/Dashboard';
+import Trending from './pages/Trending';
+import Upload from './pages/Upload';
+import Results from './pages/Results';
+import Home from './pages/Home';
+import Header from './layouts/Header';
+import SystemMonitoring from './pages/SystemMonitoring';
 
-const App: React.FC = () => {
+function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-background text-gray-900 transition-colors duration-300">
-        <Header/>
-        <main className="p-4">
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/upload" element={<Upload />} />
-            <Route path="/trending" element={<Trending />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-      </div>
+      <Header/>
+      <Routes>
+        {/* Landing Page */}
+        <Route path="/" element={<Landing />} />
+
+        <Route path="/home" element={<Home/>} />
+
+        {/* Dashboard */}
+        <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* Trending Videos */}
+        <Route path="/trending" element={<Trending />} />
+
+        {/* Upload Video */}
+        <Route path="/upload" element={<Upload />} />
+
+        {/* Results Page */}
+        <Route path="/results" element={<Results />} />
+
+        {/* Fallback - Redirect to dashboard */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
+        <Route path="/monitoring" element={<SystemMonitoring />} />
+
+      </Routes>
     </Router>
-  )
+  );
 }
 
 export default App;

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import theme from './config/theme'
+import Header from './layouts/Header.tsx'
 
 // Set runtime CSS variables from theme.ts so CSS can use theme values (e.g. --app-bg)
 const root = document.documentElement;

@@ -1,19 +1,20 @@
 /**
  * src/pages/Upload.tsx
  * 
- * Professional video upload page using reusable card components.
- * Features drag-and-drop, animations, and detailed results with VideoCard display.
+ * Professional media upload page supporting both video and image files.
+ * Features drag-and-drop, animations, and detailed deepfake detection results.
  */
 
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload as UploadIcon, File, CheckCircle, AlertCircle, Download, X } from 'lucide-react';
+import { Upload as UploadIcon, File, CheckCircle, AlertCircle, Download, X, Image as ImageIcon } from 'lucide-react';
 import DashboardLayout from '../layouts/DashboardLayout';
 import StatsCard from '../components/StatsCard';
 import theme from '../config/theme';
 
 interface ScanResult {
-  videoName: string;
+  mediaName: string;
+  mediaType: 'video' | 'image';
   isFake: boolean;
   confidence: number;
   details: Array<{ label: string; score: string }>;
@@ -28,7 +29,8 @@ const ResultCard: React.FC<{
   color?: string;
 }> = ({ title, value, color = theme.colors.textPrimary }) => (
   <motion.div
-    className="p-4 bg-gray-50 rounded-lg"
+    className="p-4 rounded-lg"
+    style={{ backgroundColor: theme.colors.neutral.lightest }}
     initial={{ opacity: 0, scale: 0.9 }}
     animate={{ opacity: 1, scale: 1 }}
     transition={{ duration: 0.3 }}
@@ -90,6 +92,10 @@ const Upload: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const getMediaType = (file: File): 'video' | 'image' => {
+    return file.type.startsWith('video/') ? 'video' : 'image';
+  };
+
   const handleFileChange = (selectedFile: File) => {
     setFile(selectedFile);
     setResult(null);
@@ -140,16 +146,20 @@ const Upload: React.FC = () => {
     setTimeout(() => {
       setUploading(false);
       const isFake = Math.random() > 0.5;
+      const mediaType = getMediaType(file);
       setResult({
-        videoName: file.name,
+        mediaName: file.name,
+        mediaType,
         isFake,
         confidence: Math.floor(Math.random() * 20) + 80,
-        thumbnail: 'https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Uploaded+Video',
+        thumbnail: 'https://via.placeholder.com/400x300/3b82f6/FFFFFF?text=Scanned+Media',
         details: [
           { label: 'Lip-sync analysis', score: isFake ? 'High' : 'Low' },
           { label: 'Facial expression consistency', score: isFake ? 'Medium' : 'High' },
           { label: 'Temporal coherence', score: isFake ? 'High' : 'Low' },
           { label: 'Audio-visual alignment', score: isFake ? 'Medium' : 'High' },
+          { label: 'Pixel artifacts detection', score: isFake ? 'High' : 'Low' },
+          { label: 'Frequency analysis', score: isFake ? 'Medium' : 'High' },
         ],
         uploadTime: new Date().toLocaleString(),
       });
@@ -185,21 +195,36 @@ const Upload: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1
-            className="text-4xl font-bold mb-2"
-            style={{ color: theme.colors.primary, fontFamily: theme.fonts.base }}
+            className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+            style={{ fontFamily: theme.fonts.base }}
           >
-            Upload Video for Analysis
+            Upload Media for Analysis
           </h1>
           <p style={{ color: theme.colors.textSecondary }}>
-            Upload suspicious videos to detect deepfake manipulation with AI-powered analysis
+            Upload suspicious videos or images to detect deepfake manipulation with AI-powered analysis
           </p>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <StatsCard title="Total Uploads" value="1,247" icon="📤" color={theme.colors.primary} />
-          <StatsCard title="Avg Scan Time" value="3.2s" icon="⚡" color={theme.colors.accent} />
-          <StatsCard title="Success Rate" value="99.1%" icon="✅" color={theme.colors.success} />
+          <StatsCard 
+            title="Total Uploads" 
+            value="2,547" 
+            icon={<UploadIcon size={24} />}
+            color={theme.colors.primary} 
+          />
+          <StatsCard 
+            title="Avg Scan Time" 
+            value="3.2s" 
+            icon={<File size={24} />}
+            color={theme.colors.accent} 
+          />
+          <StatsCard 
+            title="Success Rate" 
+            value="99.1%" 
+            icon={<CheckCircle size={24} />}
+            color={theme.colors.success} 
+          />
         </div>
 
         {/* Upload Area Card */}
@@ -217,7 +242,7 @@ const Upload: React.FC = () => {
           <input
             ref={fileInputRef}
             type="file"
-            accept="video/*"
+            accept="video/*,image/*"
             onChange={handleInputChange}
             className="hidden"
           />
@@ -239,26 +264,44 @@ const Upload: React.FC = () => {
                   <UploadIcon size={64} style={{ color: theme.colors.primary }} />
                 </motion.div>
                 <h3 className="text-2xl font-bold mb-4" style={{ color: theme.colors.textPrimary }}>
-                  Drag & Drop Video Here
+                  Drag & Drop Media Here
                 </h3>
                 <p className="mb-6" style={{ color: theme.colors.textSecondary }}>
                   Or click the button below to browse files
                 </p>
                 <motion.button
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-8 py-3 rounded-lg font-semibold"
+                  className="px-8 py-3 rounded-lg font-semibold text-white"
                   style={{
-                    backgroundColor: theme.colors.primary,
-                    color: theme.colors.background.light,
+                    background: `linear-gradient(to right, ${theme.colors.primary}, ${theme.colors.secondary})`,
                   }}
                   whileHover={{ scale: 1.05, boxShadow: theme.shadows.md }}
                   whileTap={{ scale: 0.95 }}
                 >
                   Browse Files
                 </motion.button>
-                <p className="mt-4 text-sm" style={{ color: theme.colors.textSecondary }}>
-                  Supported formats: MP4, AVI, MOV, WebM (Max 500MB)
-                </p>
+                <div className="mt-6 space-y-2">
+                  <p className="text-sm font-semibold" style={{ color: theme.colors.textPrimary }}>
+                    Supported Formats:
+                  </p>
+                  <div className="flex items-center justify-center space-x-6">
+                    <div className="flex items-center space-x-2">
+                      <File size={16} style={{ color: theme.colors.primary }} />
+                      <span className="text-sm" style={{ color: theme.colors.textSecondary }}>
+                        Video: MP4, AVI, MOV, WebM
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <ImageIcon size={16} style={{ color: theme.colors.secondary }} />
+                      <span className="text-sm" style={{ color: theme.colors.textSecondary }}>
+                        Image: JPG, PNG, GIF, BMP
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-xs" style={{ color: theme.colors.textSecondary }}>
+                    Max 500MB
+                  </p>
+                </div>
               </motion.div>
             ) : (
               <motion.div
@@ -272,13 +315,18 @@ const Upload: React.FC = () => {
                   style={{ backgroundColor: theme.colors.neutral.lightest }}
                 >
                   <div className="flex items-center space-x-4">
-                    <File size={40} style={{ color: theme.colors.primary }} />
+                    {getMediaType(file) === 'video' ? (
+                      <File size={40} style={{ color: theme.colors.primary }} />
+                    ) : (
+                      <ImageIcon size={40} style={{ color: theme.colors.secondary }} />
+                    )}
                     <div>
                       <p className="font-semibold" style={{ color: theme.colors.textPrimary }}>
                         {file.name}
                       </p>
                       <p className="text-sm" style={{ color: theme.colors.textSecondary }}>
-                        {(file.size / (1024 * 1024)).toFixed(2)} MB
+                        {(file.size / (1024 * 1024)).toFixed(2)} MB •{' '}
+                        {getMediaType(file) === 'video' ? 'Video' : 'Image'}
                       </p>
                     </div>
                   </div>
@@ -294,7 +342,7 @@ const Upload: React.FC = () => {
                 {uploading && (
                   <div className="mb-6">
                     <div className="flex justify-between mb-2">
-                      <span style={{ color: theme.colors.textSecondary }}>Processing...</span>
+                      <span style={{ color: theme.colors.textSecondary }}>Analyzing media...</span>
                       <span className="font-semibold" style={{ color: theme.colors.primary }}>
                         {progress}%
                       </span>
@@ -305,7 +353,9 @@ const Upload: React.FC = () => {
                     >
                       <motion.div
                         className="h-full rounded-full"
-                        style={{ backgroundColor: theme.colors.primary }}
+                        style={{
+                          background: `linear-gradient(to right, ${theme.colors.primary}, ${theme.colors.secondary})`,
+                        }}
                         initial={{ width: 0 }}
                         animate={{ width: `${progress}%` }}
                         transition={{ duration: 0.3 }}
@@ -317,10 +367,9 @@ const Upload: React.FC = () => {
                 {!uploading && !result && (
                   <motion.button
                     onClick={handleUpload}
-                    className="w-full py-4 rounded-lg font-bold text-lg"
+                    className="w-full py-4 rounded-lg font-bold text-lg text-white"
                     style={{
-                      backgroundColor: theme.colors.primary,
-                      color: theme.colors.background.light,
+                      background: `linear-gradient(to right, ${theme.colors.primary}, ${theme.colors.secondary})`,
                     }}
                     whileHover={{ scale: 1.02, boxShadow: theme.shadows.lg }}
                     whileTap={{ scale: 0.98 }}
@@ -362,8 +411,8 @@ const Upload: React.FC = () => {
 
                 {/* Info Cards Grid */}
                 <div className="grid md:grid-cols-3 gap-4 mb-6">
-                  <ResultCard title="Video Name" value={result.videoName} />
-                  <ResultCard title="Upload Time" value={result.uploadTime} />
+                  <ResultCard title="Media Name" value={result.mediaName.substring(0, 20) + '...'} />
+                  <ResultCard title="Type" value={result.mediaType === 'video' ? 'Video' : 'Image'} />
                   <ResultCard
                     title="Status"
                     value={result.isFake ? 'Deepfake Detected' : 'Authentic'}
@@ -375,7 +424,7 @@ const Upload: React.FC = () => {
                 <div
                   className="p-6 rounded-xl mb-6"
                   style={{
-                    backgroundColor: result.isFake ? '#FEE2E2' : '#D1FAE5',
+                    backgroundColor: result.isFake ? theme.colors.error + '15' : theme.colors.success + '15',
                     border: `2px solid ${result.isFake ? theme.colors.error : theme.colors.success}`,
                   }}
                 >
@@ -424,10 +473,9 @@ const Upload: React.FC = () => {
                 {/* Download Button */}
                 <motion.button
                   onClick={downloadReport}
-                  className="w-full py-4 rounded-lg font-bold text-lg flex items-center justify-center space-x-2"
+                  className="w-full py-4 rounded-lg font-bold text-lg flex items-center justify-center space-x-2 text-white"
                   style={{
-                    backgroundColor: theme.colors.accent,
-                    color: theme.colors.textPrimary,
+                    background: `linear-gradient(to right, ${theme.colors.primary}, ${theme.colors.secondary})`,
                   }}
                   whileHover={{ scale: 1.02, boxShadow: theme.shadows.lg }}
                   whileTap={{ scale: 0.98 }}
