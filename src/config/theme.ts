@@ -10,82 +10,82 @@ const theme = {
   colors: {
     // Background colors
     background: {
-      light: '#ffffff',      // Pure white for clean look
-      gradient: 'linear-gradient(to bottom right, #eff6ff, #ffffff, #ecfdf5)', // Blue-emerald gradient
+      light: 'var(--app-bg)',
+      gradient: 'linear-gradient(to bottom right, var(--blue-50), #ffffff, var(--emerald-50))',
     },
     
     // Primary - Blue gradient system for trust and authority
-    primary: '#3b82f6',       // Blue-500 - main interactive elements
+    primary: 'var(--color-primary)',
     
     // Secondary - Emerald for success and growth
-    secondary: '#10b981',     // Emerald-500 for secondary UI
+    secondary: 'var(--color-secondary)',
     
     // Text colors
-    textPrimary: '#0f172a',   // Slate-900 for primary text (high contrast)
-    textSecondary: '#64748b', // Slate-500 for secondary text
+    textPrimary: 'var(--color-text-primary)',
+    textSecondary: 'var(--color-text-secondary)',
     
     // Accent and status colors
-    accent: '#a855f7',        // Purple-500 for special highlights
+    accent: 'var(--color-accent)',
     
-    error: '#ef4444',         // Red-500 for errors
-    success: '#22c55e',       // Green-500 for success
-    warning: '#eab308',       // Yellow-500 for warnings
-    info: '#3b82f6',          // Blue-500 for info
+    error: 'var(--color-error)',
+    success: 'var(--color-success)',
+    warning: 'var(--color-warning)',
+    info: 'var(--color-info)',
     
     // Neutral shades - Slate scale
     neutral: {
-      lightest: '#f8fafc',    // Slate-50 for card backgrounds
-      light: '#e2e8f0',       // Slate-200 for hover states
-      medium: '#cbd5e1',      // Slate-300 for borders
-      dark: '#64748b',        // Slate-500 for subtle text
+      lightest: 'var(--neutral-lightest)',
+      light: 'var(--neutral-light)',
+      medium: 'var(--neutral-medium)',
+      dark: 'var(--neutral-dark)',
     },
     
     // Extended color palette for badges and status
     blue: {
-      50: '#eff6ff',
-      100: '#dbeafe',
-      200: '#bfdbfe',
-      400: '#60a5fa',
-      500: '#3b82f6',
-      600: '#2563eb',
-      800: '#1e40af',
+      50: 'var(--blue-50)',
+      100: 'var(--blue-100)',
+      200: 'var(--blue-200)',
+      400: 'var(--blue-400)',
+      500: 'var(--blue-500)',
+      600: 'var(--blue-600)',
+      800: 'var(--blue-800)',
     },
     
     emerald: {
-      50: '#ecfdf5',
-      100: '#d1fae5',
-      200: '#a7f3d0',
-      500: '#10b981',
-      600: '#059669',
-      800: '#065f46',
+      50: 'var(--emerald-50)',
+      100: 'var(--emerald-100)',
+      200: 'var(--emerald-200)',
+      500: 'var(--emerald-500)',
+      600: 'var(--emerald-600)',
+      800: 'var(--emerald-800)',
     },
     
     purple: {
-      50: '#faf5ff',
-      100: '#f3e8ff',
-      200: '#e9d5ff',
-      500: '#a855f7',
-      600: '#9333ea',
+      50: 'var(--purple-50)',
+      100: 'var(--purple-100)',
+      200: 'var(--purple-200)',
+      500: 'var(--purple-500)',
+      600: 'var(--purple-600)',
     },
     
     yellow: {
-      50: '#fefce8',
-      100: '#fef9c3',
-      500: '#eab308',
+      50: 'var(--yellow-50)',
+      100: 'var(--yellow-100)',
+      500: 'var(--yellow-500)',
     },
     
     orange: {
-      50: '#fff7ed',
-      100: '#ffedd5',
-      600: '#ea580c',
+      50: 'var(--orange-50)',
+      100: 'var(--orange-100)',
+      600: 'var(--orange-600)',
     },
   },
   
   // Gradient patterns
   gradients: {
-    primary: 'linear-gradient(to right, #3b82f6, #10b981)',
-    background: 'linear-gradient(to bottom right, #eff6ff, #ffffff, #ecfdf5)',
-    card: 'linear-gradient(to bottom right, #eff6ff, #f0fdf4)',
+    primary: 'linear-gradient(to right, var(--color-primary), var(--color-secondary))',
+    background: 'linear-gradient(to bottom right, var(--blue-50), #ffffff, var(--emerald-50))',
+    card: 'linear-gradient(to bottom right, var(--blue-50), var(--emerald-50))',
   },
   
   fonts: {

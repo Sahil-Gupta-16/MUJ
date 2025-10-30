@@ -6,7 +6,7 @@
  * Upload button navigates to /upload page for consistent file upload experience.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -22,6 +22,8 @@ import {
   BarChart3,
   ChevronDown,
   Book,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import theme from '../config/theme';
 import path from 'path';
@@ -41,6 +43,23 @@ const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isDark, setIsDark] = useState<boolean>(false);
+
+  // Initialize theme from localStorage or system preference
+  useEffect(() => {
+    const stored = localStorage.getItem('dg-theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const dark = stored ? stored === 'dark' : prefersDark;
+    setIsDark(dark);
+    document.documentElement.classList.toggle('dark', dark);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('dg-theme', next ? 'dark' : 'light');
+  };
 
   // Mock notifications
   const notifications = [
@@ -59,7 +78,7 @@ const Header: React.FC = () => {
 
   return (
     <motion.header
-      className="sticky top-0 z-50 bg-white shadow-lg w-full"
+      className={`sticky top-0 z-50 shadow-lg w-full ${isDark ? 'bg-slate-900' : 'bg-white'}`}
       style={{
         borderBottom: `3px solid transparent`,
         borderImage: `linear-gradient(to right, ${theme.colors.primary}, ${theme.colors.secondary}) 1`,
@@ -96,7 +115,7 @@ const Header: React.FC = () => {
               </div>
             </motion.div>
             <span
-              className="font-extrabold text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text   hover:opacity-80 transition"
+              className={`font-extrabold text-2xl hover:opacity-80 transition ${isDark ? 'text-white' : 'bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'}`}
               style={{ fontFamily: theme.fonts.heading }}
             >
               DeepfakeGuard
@@ -114,8 +133,8 @@ const Header: React.FC = () => {
                     onClick={closeAllDropdowns}
                     className="relative px-4 py-2 rounded-lg font-semibold transition-all flex items-center space-x-2"
                     style={{
-                      color: isActive ? theme.colors.primary : theme.colors.textSecondary,
-                      backgroundColor: isActive ? theme.colors.blue[50] : 'transparent',
+                      color: isActive ? theme.colors.primary : (isDark ? '#e5e7eb' : theme.colors.textSecondary),
+                      backgroundColor: isActive ? (isDark ? '#1f2937' : theme.colors.blue[50]) : 'transparent',
                     }}
                   >
                     <Icon size={18} />
@@ -135,6 +154,25 @@ const Header: React.FC = () => {
 
           {/* Right Section - Actions */}
           <div className="flex items-center space-x-3">
+            {/* Theme Toggle */}
+            <motion.button
+              onClick={toggleTheme}
+              className="p-2 rounded-full"
+              style={{
+                backgroundColor: isDark ? '#111827' : theme.colors.neutral.lightest,
+                border: `1px solid ${isDark ? '#374151' : theme.colors.neutral.light}`,
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Toggle theme"
+              title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDark ? (
+                <Sun size={18} style={{ color: '#fbbf24' }} />
+              ) : (
+                <Moon size={18} style={{ color: theme.colors.textSecondary }} />
+              )}
+            </motion.button>
             {/* Upload Button (Desktop) - Navigates to Upload Page */}
             <motion.button
               onClick={() => {
@@ -163,7 +201,7 @@ const Header: React.FC = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <Bell size={22} style={{ color: theme.colors.textSecondary }} />
+                <Bell size={22} style={{ color: isDark ? '#cbd5e1' : theme.colors.textSecondary }} />
                 {unreadCount > 0 && (
                   <motion.span
                     className="absolute top-0 right-0 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center text-white"
@@ -181,7 +219,7 @@ const Header: React.FC = () => {
               <AnimatePresence>
                 {notificationsOpen && (
                   <motion.div
-                    className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl overflow-hidden"
+                    className={`absolute right-0 mt-2 w-80 rounded-xl shadow-xl overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-white'}`}
                     style={{ border: `1px solid ${theme.colors.neutral.light}` }}
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -189,7 +227,7 @@ const Header: React.FC = () => {
                     transition={{ duration: 0.2 }}
                   >
                     <div className="p-4 border-b" style={{ borderColor: theme.colors.neutral.light }}>
-                      <h3 className="font-bold text-lg" style={{ color: theme.colors.textPrimary }}>
+                      <h3 className="font-bold text-lg" style={{ color: isDark ? '#e5e7eb' : theme.colors.textPrimary }}>
                         Notifications
                       </h3>
                     </div>
@@ -197,7 +235,7 @@ const Header: React.FC = () => {
                       {notifications.map((notification) => (
                         <motion.div
                           key={notification.id}
-                          className="p-4 hover:bg-neutral-lightest transition cursor-pointer border-b"
+                          className={`p-4 transition cursor-pointer border-b ${isDark ? 'hover:bg-slate-700' : 'hover:bg-neutral-lightest'}`}
                           style={{ borderColor: theme.colors.neutral.light }}
                           whileHover={{ x: 5 }}
                         >
@@ -209,10 +247,10 @@ const Header: React.FC = () => {
                               />
                             )}
                             <div className="flex-1">
-                              <p className="text-sm" style={{ color: theme.colors.textPrimary }}>
+                              <p className="text-sm" style={{ color: isDark ? '#e5e7eb' : theme.colors.textPrimary }}>
                                 {notification.text}
                               </p>
-                              <p className="text-xs mt-1" style={{ color: theme.colors.textSecondary }}>
+                              <p className="text-xs mt-1" style={{ color: isDark ? '#94a3b8' : theme.colors.textSecondary }}>
                                 {notification.time}
                               </p>
                             </div>
@@ -232,7 +270,7 @@ const Header: React.FC = () => {
                   setUserMenuOpen(!userMenuOpen);
                   setNotificationsOpen(false);
                 }}
-                className="flex items-center space-x-2 p-2 rounded-full hover:bg-neutral-lightest transition"
+                className={`flex items-center space-x-2 p-2 rounded-full transition ${isDark ? 'hover:bg-slate-800' : 'hover:bg-neutral-lightest'}`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -245,7 +283,7 @@ const Header: React.FC = () => {
                 <ChevronDown 
                   size={16} 
                   style={{ 
-                    color: theme.colors.textSecondary,
+                    color: isDark ? '#cbd5e1' : theme.colors.textSecondary,
                     transform: userMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.2s'
                   }} 
@@ -256,7 +294,7 @@ const Header: React.FC = () => {
               <AnimatePresence>
                 {userMenuOpen && (
                   <motion.div
-                    className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl overflow-hidden"
+                    className={`absolute right-0 mt-2 w-56 rounded-xl shadow-xl overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-white'}`}
                     style={{ border: `1px solid ${theme.colors.neutral.light}` }}
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -264,10 +302,10 @@ const Header: React.FC = () => {
                     transition={{ duration: 0.2 }}
                   >
                     <div className="p-4 border-b" style={{ borderColor: theme.colors.neutral.light }}>
-                      <p className="font-semibold" style={{ color: theme.colors.textPrimary }}>
+                      <p className="font-semibold" style={{ color: isDark ? '#e5e7eb' : theme.colors.textPrimary }}>
                         John Doe
                       </p>
-                      <p className="text-sm" style={{ color: theme.colors.textSecondary }}>
+                      <p className="text-sm" style={{ color: isDark ? '#94a3b8' : theme.colors.textSecondary }}>
                         admin@deepfakeguard.com
                       </p>
                     </div>
@@ -281,11 +319,11 @@ const Header: React.FC = () => {
                           navigate(path);
                           setUserMenuOpen(false);
                         }}
-                        className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-neutral-lightest transition text-left"
+                        className={`w-full flex items-center space-x-3 px-4 py-3 transition text-left ${isDark ? 'hover:bg-slate-700' : 'hover:bg-neutral-lightest'}`}
                         whileHover={{ x: 5 }}
                       >
-                        <Icon size={18} style={{ color: theme.colors.textSecondary }} />
-                        <span style={{ color: theme.colors.textPrimary }}>{label}</span>
+                        <Icon size={18} style={{ color: isDark ? '#cbd5e1' : theme.colors.textSecondary }} />
+                        <span style={{ color: isDark ? '#e5e7eb' : theme.colors.textPrimary }}>{label}</span>
                       </motion.button>
                     ))}
                   </motion.div>
@@ -303,9 +341,9 @@ const Header: React.FC = () => {
               whileTap={{ scale: 0.9 }}
             >
               {mobileMenuOpen ? (
-                <X size={24} style={{ color: theme.colors.textPrimary }} />
+                <X size={24} style={{ color: isDark ? '#e5e7eb' : theme.colors.textPrimary }} />
               ) : (
-                <Menu size={24} style={{ color: theme.colors.textPrimary }} />
+                <Menu size={24} style={{ color: isDark ? '#e5e7eb' : theme.colors.textPrimary }} />
               )}
             </motion.button>
           </div>
@@ -316,7 +354,7 @@ const Header: React.FC = () => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            className="md:hidden bg-white border-t"
+            className={`md:hidden border-t ${isDark ? 'bg-slate-900' : 'bg-white'}`}
             style={{ borderColor: theme.colors.neutral.light }}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
@@ -331,10 +369,8 @@ const Header: React.FC = () => {
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center space-x-3 px-4 py-3 rounded-lg font-semibold transition"
                     style={{
-                      backgroundColor:
-                        location.pathname === path ? theme.colors.blue[50] : 'transparent',
-                      color:
-                        location.pathname === path ? theme.colors.primary : theme.colors.textSecondary,
+                      backgroundColor: location.pathname === path ? (isDark ? '#1f2937' : theme.colors.blue[50]) : 'transparent',
+                      color: location.pathname === path ? theme.colors.primary : (isDark ? '#e5e7eb' : theme.colors.textSecondary),
                     }}
                   >
                     <Icon size={20} />

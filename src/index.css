@@ -1,18 +1,88 @@
 
 @import 'tailwindcss';
 
-/* Global background colors set via runtime CSS variables (from src/config/theme.ts) */
-body {
-  background-color: var(--app-bg, #ffffff); /* fallback to white */
-  color: var(--app-text-color, #000000);
+/* Global CSS variables for theming */
+:root {
+  /* App surface */
+  --app-bg: #ffffff;
+  --app-text-color: #0f172a;
+
+  /* Core tokens */
+  --color-primary: #3b82f6;
+  --color-secondary: #10b981;
+  --color-accent: #a855f7;
+  --color-error: #ef4444;
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-info: #3b82f6;
+
+  /* Text */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #64748b;
+
+  /* Neutrals */
+  --neutral-lightest: #f8fafc; /* cards */
+  --neutral-light: #e2e8f0;    /* borders */
+  --neutral-medium: #cbd5e1;   /* dividers */
+  --neutral-dark: #64748b;     /* subtle text */
+
+  /* Utility palette (kept for components that rely on them) */
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-800: #1e40af;
+
+  --emerald-50: #ecfdf5;
+  --emerald-100: #d1fae5;
+  --emerald-200: #a7f3d0;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+  --emerald-800: #065f46;
+
+  --purple-50: #faf5ff;
+  --purple-100: #f3e8ff;
+  --purple-200: #e9d5ff;
+  --purple-500: #a855f7;
+  --purple-600: #9333ea;
+
+  --yellow-50: #fefce8;
+  --yellow-100: #fef9c3;
+  --yellow-500: #eab308;
+
+  --orange-50: #fff7ed;
+  --orange-100: #ffedd5;
+  --orange-600: #ea580c;
 }
 
-/*
-.dark body {
-  background-color: var(--app-bg-dark, #000000);
-  color: var(--app-text-color-dark, #ffffff);
+.dark {
+  --app-bg: #0b1220; /* slate-950ish */
+  --app-text-color: #e5e7eb; /* slate-200 */
+
+  --color-text-primary: #e5e7eb; /* light text */
+  --color-text-secondary: #94a3b8; /* slate-400 */
+
+  --neutral-lightest: #0f172a; /* slate-900 for cards */
+  --neutral-light: #334155;    /* slate-700 for borders */
+  --neutral-medium: #475569;   /* slate-600 */
+  --neutral-dark: #94a3b8;     /* slate-400 */
+
+  /* Keep brand colors; can be tuned if desired */
+  --blue-50: #0b1730; /* darker substitute for active backgrounds */
 }
-*/
+
+/* Apply app background and text */
+body {
+  background-color: var(--app-bg);
+  color: var(--app-text-color);
+}
+
+/* Minimal dark-mode overrides for common utility classes used in components */
+.dark .bg-white { background-color: var(--neutral-lightest) !important; }
+.dark .text-black { color: var(--color-text-primary) !important; }
+.dark .border { border-color: var(--neutral-light) !important; }
 
 /* Make interactive elements show pointer cursor by default */
 a,
