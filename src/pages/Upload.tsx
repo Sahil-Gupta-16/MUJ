@@ -3,13 +3,15 @@
  * 
  * Professional media upload page supporting both video and image files.
  * Features drag-and-drop, animations, and detailed deepfake detection results.
- * Automatically saves analysis to history when completed.
+ * Shows modal with each model's processing progress.
+ * Automatically redirects to results page when complete.
+ * Includes playable video preview with controls and model score charts.
  */
 
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload as UploadIcon, File, CheckCircle, AlertCircle, Download, X, Image as ImageIcon } from 'lucide-react';
+import { Upload as UploadIcon, File, CheckCircle, AlertCircle, Download, X, Image as ImageIcon, Loader, Play, Pause, ExternalLink } from 'lucide-react';
 import DashboardLayout from '../layouts/DashboardLayout';
 import StatsCard from '../components/StatsCard';
 import theme from '../config/theme';
@@ -24,6 +26,16 @@ interface ScanResult {
   uploadTime: string;
   thumbnail: string;
   processingTime: string;
+  videoUrl?: string;
+  modelScores?: Array<{ name: string; score: number; color: string }>;
+}
+
+interface ModelProgress {
+  name: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  progress: number;
+  processingTime: string;
+  confidence?: number;
 }
 
 // Reusable Result Card Component
@@ -40,10 +52,10 @@ const ResultCard: React.FC<{
     transition={{ duration: 0.3 }}
     whileHover={{ scale: 1.02 }}
   >
-    <p className="text-sm mb-1" style={{ color: theme.colors.textSecondary }}>
+    <p className="text-xs mb-1 uppercase tracking-wide font-semibold" style={{ color: theme.colors.textSecondary }}>
       {title}
     </p>
-    <p className="font-semibold text-lg" style={{ color }}>
+    <p className="font-bold text-lg" style={{ color }}>
       {value}
     </p>
   </motion.div>
@@ -62,28 +74,405 @@ const DetailItem: React.FC<{
       ? theme.colors.warning
       : theme.colors.success;
 
+  const getSeverityLabel = (s: string): string => {
+    if (s === 'High') return 'High Risk';
+    if (s === 'Medium') return 'Medium Risk';
+    return 'Low Risk';
+  };
+
   return (
     <motion.div
-      className="flex justify-between p-4 rounded-lg"
+      className="flex items-center justify-between p-3 rounded-lg"
       style={{
-        backgroundColor: theme.colors.neutral.lightest,
-        border: `1px solid ${theme.colors.neutral.medium}`,
+        backgroundColor: scoreColor + '10',
+        border: `1px solid ${scoreColor}30`,
       }}
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.1 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
       whileHover={{
         scale: 1.02,
-        borderColor: theme.colors.primary,
-        boxShadow: theme.shadows.sm,
+        borderColor: scoreColor,
+        boxShadow: `0 4px 12px ${scoreColor}20`,
       }}
     >
-      <span className="font-medium" style={{ color: theme.colors.textPrimary }}>
+      <span className="font-medium text-sm" style={{ color: theme.colors.textPrimary }}>
         {label}
       </span>
-      <span className="font-bold" style={{ color: scoreColor }}>
-        {score}
+      <span className="font-bold text-xs px-2 py-1 rounded-full" style={{ color: scoreColor, backgroundColor: scoreColor + '20' }}>
+        {getSeverityLabel(score)}
       </span>
+    </motion.div>
+  );
+};
+
+// Model Progress Row Component
+const ModelProgressRow: React.FC<{ model: ModelProgress; index: number }> = ({ model, index }) => {
+  const getStatusColor = () => {
+    switch (model.status) {
+      case 'completed':
+        return theme.colors.success;
+      case 'failed':
+        return theme.colors.error;
+      case 'processing':
+        return theme.colors.primary;
+      default:
+        return theme.colors.textSecondary;
+    }
+  };
+
+  const getStatusIcon = () => {
+    switch (model.status) {
+      case 'completed':
+        return <CheckCircle size={18} />;
+      case 'failed':
+        return <AlertCircle size={18} />;
+      case 'processing':
+        return <Loader size={18} className="animate-spin" />;
+      default:
+        return <div className="w-[18px] h-[18px] rounded-full border-2 border-gray-300" />;
+    }
+  };
+
+  const statusColor = getStatusColor();
+
+  return (
+    <motion.div
+      className="p-4 rounded-lg mb-3"
+      style={{
+        backgroundColor: theme.colors.neutral.lightest,
+        border: `1px solid ${theme.colors.neutral.light}`,
+      }}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.1 }}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center space-x-3 flex-1">
+          <div style={{ color: statusColor }}>
+            {getStatusIcon()}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm" style={{ color: theme.colors.textPrimary }}>
+              {model.name}
+            </p>
+            <p className="text-xs" style={{ color: theme.colors.textSecondary }}>
+              {model.processingTime}
+            </p>
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="text-sm font-bold" style={{ color: statusColor }}>
+            {model.progress}%
+          </p>
+        </div>
+      </div>
+
+      <div
+        className="w-full h-2 rounded-full overflow-hidden"
+        style={{ backgroundColor: theme.colors.neutral.light }}
+      >
+        <motion.div
+          className="h-full rounded-full"
+          style={{ backgroundColor: statusColor }}
+          initial={{ width: 0 }}
+          animate={{ width: `${model.progress}%` }}
+          transition={{ duration: 0.5 }}
+        />
+      </div>
+
+      {model.status === 'completed' && model.confidence && (
+        <div className="mt-2 text-xs flex items-center justify-between" style={{ color: theme.colors.textSecondary }}>
+          <span>Score</span>
+          <span className="font-bold" style={{ color: theme.colors.primary }}>
+            {model.confidence}%
+          </span>
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
+// Processing Modal Component
+const ProcessingModal: React.FC<{
+  isOpen: boolean;
+  models: ModelProgress[];
+  overallProgress: number;
+  mediaName: string;
+}> = ({ isOpen, models, overallProgress, mediaName }) => {
+  const completedModels = models.filter((m) => m.status === 'completed').length;
+  const totalModels = models.length;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <motion.div
+            className="bg-white rounded-xl shadow-2xl p-8 max-w-2xl w-full"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+          >
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold mb-2" style={{ color: theme.colors.textPrimary }}>
+                Analyzing Media
+              </h2>
+              <p className="text-sm" style={{ color: theme.colors.textSecondary }}>
+                {mediaName}
+              </p>
+            </div>
+
+            <motion.div
+              className="mb-6 p-4 rounded-lg"
+              style={{
+                backgroundColor: theme.colors.primary + '15',
+                border: `2px solid ${theme.colors.primary}`,
+              }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-bold" style={{ color: theme.colors.textPrimary }}>
+                  Overall Progress
+                </span>
+                <span className="text-lg font-bold" style={{ color: theme.colors.primary }}>
+                  {completedModels}/{totalModels} Models
+                </span>
+              </div>
+              <div
+                className="w-full h-3 rounded-full overflow-hidden"
+                style={{ backgroundColor: theme.colors.neutral.light }}
+              >
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{
+                    background: `linear-gradient(to right, ${theme.colors.primary}, ${theme.colors.secondary})`,
+                  }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${overallProgress}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+              <p className="text-xs mt-2" style={{ color: theme.colors.textSecondary }}>
+                {overallProgress}% Complete
+              </p>
+            </motion.div>
+
+            <div className="mb-6">
+              <h3 className="text-sm font-bold mb-3" style={{ color: theme.colors.textPrimary }}>
+                Model Processing Status
+              </h3>
+              <div className="space-y-0 max-h-64 overflow-y-auto">
+                {models.map((model, idx) => (
+                  <ModelProgressRow key={idx} model={model} index={idx} />
+                ))}
+              </div>
+            </div>
+
+            <motion.div
+              className="p-4 rounded-lg text-center"
+              style={{ backgroundColor: theme.colors.neutral.lightest }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <div className="flex items-center justify-center space-x-2 mb-2">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                >
+                  <Loader size={16} style={{ color: theme.colors.primary }} />
+                </motion.div>
+                <p className="text-sm font-medium" style={{ color: theme.colors.textPrimary }}>
+                  Processing your media...
+                </p>
+              </div>
+              <p className="text-xs" style={{ color: theme.colors.textSecondary }}>
+                This may take a few moments depending on file size
+              </p>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// Video Player Component
+const VideoPlayer: React.FC<{ videoUrl: string; mediaName: string }> = ({ videoUrl, mediaName }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+    }
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (videoRef.current) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const percent = (e.clientX - rect.left) / rect.width;
+      videoRef.current.currentTime = percent * duration;
+    }
+  };
+
+  const formatTime = (time: number) => {
+    if (!time || !isFinite(time)) return '0:00';
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  return (
+    <motion.div
+      className="relative w-full rounded-xl overflow-hidden bg-black"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+    >
+      <motion.div
+        className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-white text-xs font-bold z-20"
+        style={{ backgroundColor: theme.colors.primary }}
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        🎬 Video Preview
+      </motion.div>
+
+      <div className="relative aspect-video bg-black">
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onEnded={() => setIsPlaying(false)}
+          className="w-full h-full object-cover"
+          crossOrigin="anonymous"
+        />
+
+        <motion.div
+          className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all group flex flex-col justify-end"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="p-4 space-y-3 bg-gradient-to-t from-black to-transparent">
+            <div
+              className="group/progress h-1 bg-gray-600 rounded-full cursor-pointer hover:h-2 transition-all"
+              onClick={handleProgressClick}
+            >
+              <motion.div
+                className="h-full rounded-full"
+                style={{
+                  backgroundColor: theme.colors.primary,
+                  width: duration ? `${(currentTime / duration) * 100}%` : '0%',
+                }}
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-white">
+              <div className="flex items-center gap-3">
+                <motion.button
+                  onClick={togglePlay}
+                  className="p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {isPlaying ? (
+                    <Pause size={20} fill="white" />
+                  ) : (
+                    <Play size={20} fill="white" />
+                  )}
+                </motion.button>
+
+                <span className="text-xs font-medium">
+                  {formatTime(currentTime)} / {formatTime(duration)}
+                </span>
+              </div>
+
+              <span className="text-xs font-medium truncate max-w-xs">
+                {mediaName}
+              </span>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Model Score Bar Chart
+const ModelScoreChart: React.FC<{ 
+  modelScores: Array<{ name: string; score: number; color: string }>;
+}> = ({ modelScores }) => {
+  return (
+    <motion.div
+      className="relative w-full rounded-xl bg-white p-6"
+      style={{ border: `1px solid ${theme.colors.neutral.light}` }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.4 }}
+    >
+      <h3 className="text-lg font-bold mb-4" style={{ color: theme.colors.textPrimary }}>
+        Model Confidence Scores
+      </h3>
+      
+      <div className="space-y-3">
+        {modelScores.map((model, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 + idx * 0.05 }}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs font-semibold" style={{ color: theme.colors.textPrimary }}>
+                {model.name}
+              </p>
+              <p className="text-xs font-bold" style={{ color: model.color }}>
+                {model.score}%
+              </p>
+            </div>
+            <div
+              className="w-full h-2 rounded-full overflow-hidden"
+              style={{ backgroundColor: theme.colors.neutral.light }}
+            >
+              <motion.div
+                className="h-full rounded-full"
+                style={{ backgroundColor: model.color }}
+                initial={{ width: 0 }}
+                animate={{ width: `${model.score}%` }}
+                transition={{ duration: 0.8, delay: 0.5 + idx * 0.1 }}
+              />
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </motion.div>
   );
 };
@@ -92,11 +481,28 @@ const Upload: React.FC = () => {
   const navigate = useNavigate();
   const { addReport } = useReports();
   const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isProcessingModalOpen, setIsProcessingModalOpen] = useState(false);
+  const [modelProgress, setModelProgress] = useState<ModelProgress[]>([]);
+  const [overallProgress, setOverallProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const models = [
+    'COLOR-CUES-LSTM-V1',
+    'EFFICIENTNET-B7-V1',
+    'EYEBLINK-CNN-LSTM-V1',
+    'DISTIL-DIRE-V1',
+    'CROSS-EFFICIENT-VIT-GAN',
+  ];
+
+  const modelColors = [
+    '#EF4444', // Red
+    '#F97316', // Orange
+    '#EAB308', // Yellow
+    '#22C55E', // Green
+    '#06B6D4', // Cyan
+  ];
 
   const getMediaType = (file: File): 'video' | 'image' => {
     return file.type.startsWith('video/') ? 'video' : 'image';
@@ -105,7 +511,6 @@ const Upload: React.FC = () => {
   const handleFileChange = (selectedFile: File) => {
     setFile(selectedFile);
     setResult(null);
-    setProgress(0);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,68 +538,138 @@ const Upload: React.FC = () => {
 
   const handleUpload = () => {
     if (!file) return;
-    setUploading(true);
-    setProgress(0);
+
+    const initialProgress: ModelProgress[] = models.map((model) => ({
+      name: model,
+      status: 'pending',
+      progress: 0,
+      processingTime: '0.0s',
+    }));
+
+    setModelProgress(initialProgress);
+    setOverallProgress(0);
+    setIsProcessingModalOpen(true);
     setResult(null);
 
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 300);
+    const videoUrl = URL.createObjectURL(file);
+    let completedCount = 0;
+    const baseDelay = 800;
+    const isFake = Math.random() > 0.5;
 
-    // Simulate scan completion
-    setTimeout(() => {
-      setUploading(false);
-      const isFake = Math.random() > 0.5;
-      const mediaType = getMediaType(file);
-      const processingTime = (Math.random() * 3 + 1).toFixed(1) + 's';
-      const confidence = Math.floor(Math.random() * 20) + 80;
+    models.forEach((model, modelIndex) => {
+      setTimeout(() => {
+        setModelProgress((prev) =>
+          prev.map((m, idx) =>
+            idx === modelIndex ? { ...m, status: 'processing', progress: 10 } : m
+          )
+        );
 
-      const scanResult: ScanResult = {
-        mediaName: file.name,
-        mediaType,
-        isFake,
-        confidence,
-        thumbnail: 'https://via.placeholder.com/400x300/3b82f6/FFFFFF?text=Scanned+Media',
-        details: [
-          { label: 'Lip-sync analysis', score: isFake ? 'High' : 'Low' },
-          { label: 'Facial expression consistency', score: isFake ? 'Medium' : 'High' },
-          { label: 'Temporal coherence', score: isFake ? 'High' : 'Low' },
-          { label: 'Audio-visual alignment', score: isFake ? 'Medium' : 'High' },
-          { label: 'Pixel artifacts detection', score: isFake ? 'High' : 'Low' },
-          { label: 'Frequency analysis', score: isFake ? 'Medium' : 'High' },
-        ],
-        uploadTime: new Date().toLocaleString(),
-        processingTime,
-      };
+        const progressInterval = setInterval(() => {
+          setModelProgress((prev) => {
+            const updated = [...prev];
+            if (updated[modelIndex].progress < 90) {
+              updated[modelIndex].progress += Math.random() * 20;
+              if (updated[modelIndex].progress > 90) updated[modelIndex].progress = 90;
+            }
+            return updated;
+          });
+        }, 300);
 
-      setResult(scanResult);
+        setTimeout(() => {
+          clearInterval(progressInterval);
+          const modelConfidence = Math.floor(Math.random() * 20) + 80;
+          const processingTime = (Math.random() * 1.5 + 1).toFixed(1) + 's';
 
-      // Add to history
-      const models = ['COLOR-CUES-LSTM-V1', 'EFFICIENTNET-B7-V1', 'EYEBLINK-CNN-LSTM-V1', 'DISTIL-DIRE-V1', 'CROSS-EFFICIENT-VIT-GAN'];
-      const selectedModel = models[Math.floor(Math.random() * models.length)];
+          setModelProgress((prev) => {
+            const updated = [...prev];
+            updated[modelIndex] = {
+              ...updated[modelIndex],
+              status: 'completed',
+              progress: 100,
+              confidence: modelConfidence,
+              processingTime,
+            };
+            return updated;
+          });
 
-      addReport({
-        mediaName: file.name,
-        mediaType,
-        title: isFake ? 'Deepfake Detected - ' + file.name : 'Authentic Content - ' + file.name,
-        channel: 'User Upload',
-        confidence,
-        isFake,
-        status: 'completed',
-        processingTime,
-        timestamp: new Date().toISOString(),
-        fileSize: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
-        model: selectedModel,
-        views: '0',
-      });
-    }, 3500);
+          completedCount++;
+          setOverallProgress(Math.round((completedCount / models.length) * 100));
+
+          if (completedCount === models.length) {
+            setTimeout(() => {
+              setIsProcessingModalOpen(false);
+
+              const mediaType = getMediaType(file);
+              const totalProcessingTime = (Math.random() * 3 + 2).toFixed(1) + 's';
+              const confidence = Math.floor(Math.random() * 20) + 80;
+              const selectedModel = models[Math.floor(Math.random() * models.length)];
+
+              const modelScores = models.map((name, idx) => ({
+                name,
+                score: Math.floor(Math.random() * 20) + 75,
+                color: modelColors[idx],
+              }));
+
+              const scanResult: ScanResult = {
+                mediaName: file.name,
+                mediaType,
+                isFake,
+                confidence,
+                thumbnail: 'https://via.placeholder.com/400x300/3b82f6/FFFFFF?text=Scanned+Media',
+                videoUrl: mediaType === 'video' ? videoUrl : undefined,
+                modelScores,
+                details: [
+                  { label: 'Lip-sync analysis', score: isFake ? 'High' : 'Low' },
+                  { label: 'Facial expression consistency', score: isFake ? 'Medium' : 'High' },
+                  { label: 'Temporal coherence', score: isFake ? 'High' : 'Low' },
+                  { label: 'Audio-visual alignment', score: isFake ? 'Medium' : 'High' },
+                  { label: 'Pixel artifacts detection', score: isFake ? 'High' : 'Low' },
+                  { label: 'Frequency analysis', score: isFake ? 'Medium' : 'High' },
+                ],
+                uploadTime: new Date().toLocaleString(),
+                processingTime: totalProcessingTime,
+              };
+
+              setResult(scanResult);
+
+              addReport({
+                mediaName: file.name,
+                mediaType,
+                title: isFake ? 'Deepfake Detected - ' + file.name : 'Authentic Content - ' + file.name,
+                channel: 'User Upload',
+                confidence,
+                isFake,
+                status: 'completed',
+                processingTime: totalProcessingTime,
+                timestamp: new Date().toISOString(),
+                fileSize: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+                model: selectedModel,
+                views: '0',
+              });
+
+              setTimeout(() => {
+                navigate('/results', {
+                  state: {
+                    videoData: {
+                      id: Date.now(),
+                      thumbnail: scanResult.thumbnail,
+                      title: scanResult.mediaName,
+                      channel: 'User Upload',
+                      sourceLink: mediaType === 'video' ? videoUrl : '#',
+                      isFake: scanResult.isFake,
+                      confidence: scanResult.confidence,
+                      views: '0',
+                      uploadDate: new Date().toLocaleDateString(),
+                      mediaType: mediaType,
+                    },
+                  },
+                });
+              }, 2000);
+            }, 500);
+          }
+        }, 2000 + modelIndex * 500);
+      }, baseDelay + modelIndex * 1000);
+    });
   };
 
   const downloadReport = () => {
@@ -212,7 +687,6 @@ const Upload: React.FC = () => {
   const clearFile = () => {
     setFile(null);
     setResult(null);
-    setProgress(0);
   };
 
   return (
@@ -365,37 +839,13 @@ const Upload: React.FC = () => {
                     onClick={clearFile}
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
+                    disabled={isProcessingModalOpen}
                   >
                     <X size={24} style={{ color: theme.colors.error }} />
                   </motion.button>
                 </div>
 
-                {uploading && (
-                  <div className="mb-6">
-                    <div className="flex justify-between mb-2">
-                      <span style={{ color: theme.colors.textSecondary }}>Analyzing media...</span>
-                      <span className="font-semibold" style={{ color: theme.colors.primary }}>
-                        {progress}%
-                      </span>
-                    </div>
-                    <div
-                      className="w-full h-3 rounded-full overflow-hidden"
-                      style={{ backgroundColor: theme.colors.neutral.light }}
-                    >
-                      <motion.div
-                        className="h-full rounded-full"
-                        style={{
-                          background: `linear-gradient(to right, ${theme.colors.primary}, ${theme.colors.secondary})`,
-                        }}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${progress}%` }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {!uploading && !result && (
+                {!isProcessingModalOpen && (
                   <motion.button
                     onClick={handleUpload}
                     className="w-full py-4 rounded-lg font-bold text-lg text-white"
@@ -413,131 +863,16 @@ const Upload: React.FC = () => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Results Section using Cards */}
-        <AnimatePresence>
-          {result && (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -30 }}
-              transition={{ duration: 0.5 }}
-            >
-              {/* Result Header Card */}
-              <motion.div
-                className="bg-white rounded-xl shadow-xl p-8 mb-6"
-                style={{
-                  border: `3px solid ${result.isFake ? theme.colors.error : theme.colors.success}`,
-                }}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-3xl font-bold" style={{ color: theme.colors.textPrimary }}>
-                    Analysis Complete
-                  </h2>
-                  {result.isFake ? (
-                    <AlertCircle size={48} style={{ color: theme.colors.error }} />
-                  ) : (
-                    <CheckCircle size={48} style={{ color: theme.colors.success }} />
-                  )}
-                </div>
-
-                {/* Info Cards Grid */}
-                <div className="grid md:grid-cols-3 gap-4 mb-6">
-                  <ResultCard title="Media Name" value={result.mediaName.substring(0, 20) + '...'} />
-                  <ResultCard title="Type" value={result.mediaType === 'video' ? 'Video' : 'Image'} />
-                  <ResultCard
-                    title="Status"
-                    value={result.isFake ? 'Deepfake Detected' : 'Authentic'}
-                    color={result.isFake ? theme.colors.error : theme.colors.success}
-                  />
-                </div>
-
-                {/* Confidence Score Card */}
-                <div
-                  className="p-6 rounded-xl mb-6"
-                  style={{
-                    backgroundColor: result.isFake ? theme.colors.error + '15' : theme.colors.success + '15',
-                    border: `2px solid ${result.isFake ? theme.colors.error : theme.colors.success}`,
-                  }}
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-lg font-semibold" style={{ color: theme.colors.textPrimary }}>
-                      Confidence Score
-                    </span>
-                    <span
-                      className="text-4xl font-extrabold"
-                      style={{ color: result.isFake ? theme.colors.error : theme.colors.success }}
-                    >
-                      {result.confidence}%
-                    </span>
-                  </div>
-                  <div
-                    className="w-full h-4 rounded-full overflow-hidden"
-                    style={{ backgroundColor: 'white' }}
-                  >
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{
-                        backgroundColor: result.isFake ? theme.colors.error : theme.colors.success,
-                      }}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${result.confidence}%` }}
-                      transition={{ duration: 1, delay: 0.3 }}
-                    />
-                  </div>
-                  <div className="mt-3 text-sm" style={{ color: theme.colors.textSecondary }}>
-                    Processing Time: {result.processingTime}
-                  </div>
-                </div>
-
-                {/* Detailed Analysis using DetailItem cards */}
-                <div className="mb-6">
-                  <h3
-                    className="text-xl font-bold mb-4"
-                    style={{ color: theme.colors.textPrimary }}
-                  >
-                    Detailed Analysis
-                  </h3>
-                  <div className="space-y-3">
-                    {result.details.map((detail, idx) => (
-                      <DetailItem key={idx} label={detail.label} score={detail.score} index={idx} />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Success Message */}
-                <motion.div
-                  className="p-4 rounded-lg mb-6"
-                  style={{
-                    backgroundColor: theme.colors.success + '20',
-                    border: `2px solid ${theme.colors.success}`,
-                  }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <p style={{ color: theme.colors.success }} className="font-semibold text-sm">
-                    ✓ Report automatically saved to history
-                  </p>
-                </motion.div>
-
-                {/* Download Button */}
-                <motion.button
-                  onClick={downloadReport}
-                  className="w-full py-4 rounded-lg font-bold text-lg flex items-center justify-center space-x-2 text-white"
-                  style={{
-                    background: `linear-gradient(to right, ${theme.colors.primary}, ${theme.colors.secondary})`,
-                  }}
-                  whileHover={{ scale: 1.02, boxShadow: theme.shadows.lg }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Download size={24} />
-                  <span>Download Full Report (JSON)</span>
-                </motion.button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        
       </motion.div>
+
+      {/* Processing Modal */}
+      <ProcessingModal
+        isOpen={isProcessingModalOpen}
+        models={modelProgress}
+        overallProgress={overallProgress}
+        mediaName={file?.name || 'Unknown'}
+      />
     </DashboardLayout>
   );
 };
