@@ -1,0 +1,29 @@
+
+@import 'tailwindcss';
+
+/* Global background colors set via runtime CSS variables (from src/config/theme.ts) */
+body {
+  background-color: var(--app-bg, #ffffff); /* fallback to white */
+  color: var(--app-text-color, #000000);
+}
+
+/*
+.dark body {
+  background-color: var(--app-bg-dark, #000000);
+  color: var(--app-text-color-dark, #ffffff);
+}
+*/
+
+/* Make interactive elements show pointer cursor by default */
+a,
+button,
+[role="button"],
+.clickable {
+  cursor: pointer;
+}
+
+/* Disabled controls should indicate not-allowed */
+button:disabled,
+[disabled] {
+  cursor: not-allowed;
+}

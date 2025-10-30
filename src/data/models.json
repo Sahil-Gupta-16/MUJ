@@ -1,0 +1,64 @@
+    {
+  "models": [
+    {
+      "id": 1,
+      "name": "COLOR-CUES-LSTM-V1",
+      "description": "Color-cues LSTM detector using 8-D color histogram analysis for deepfake detection.",
+      "status": "loaded",
+      "mediaType": ["video"],
+      "device": "CUDA",
+      "version": "Version 1",
+      "health": 98,
+      "performance": "High",
+      "lastChecked": "2 minutes ago"
+    },
+    {
+      "id": 2,
+      "name": "EFFICIENTNET-B7-V1",
+      "description": "Frame-by-frame face detector using MiDNet and EfficientNet-B7 classifier.",
+      "status": "loaded",
+      "mediaType": ["video"],
+      "device": "CUDA",
+      "version": "Version 1",
+      "health": 95,
+      "performance": "High",
+      "lastChecked": "5 minutes ago"
+    },
+    {
+      "id": 3,
+      "name": "EYEBLINK-CNN-LSTM-V1",
+      "description": "Detects deepfakes by analyzing eye blink patterns using a CNN LSTM architecture.",
+      "status": "loaded",
+      "mediaType": ["video"],
+      "device": "CUDA",
+      "version": "Version 1",
+      "health": 92,
+      "performance": "High",
+      "lastChecked": "3 minutes ago"
+    },
+    {
+      "id": 4,
+      "name": "DISTIL-DIRE-V1",
+      "description": "Image deepfake detector using Diffusion Reconstruction Error (DRE) and a ResNet backbone.",
+      "status": "loaded",
+      "mediaType": ["image"],
+      "device": "CUDA",
+      "version": "Version 1",
+      "health": 88,
+      "performance": "Medium",
+      "lastChecked": "8 minutes ago"
+    },
+    {
+      "id": 5,
+      "name": "CROSS-EFFICIENT-VIT-GAN",
+      "description": "Hybrid ViT-based model optimized for detecting GAN-based video deepfakes.",
+      "status": "loaded",
+      "mediaType": ["video"],
+      "device": "CUDA",
+      "version": "N/A",
+      "health": 91,
+      "performance": "High",
+      "lastChecked": "1 minute ago"
+    }
+  ]
+}

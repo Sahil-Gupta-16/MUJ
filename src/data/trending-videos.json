@@ -1,0 +1,222 @@
+[
+  {
+    "id": 1,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+1",
+    "title": "Celebrity Interview Goes Viral - Authenticity Verified",
+    "channel": "News Network",
+    "sourceLink": "https://www.youtube.com/channel/NewsNetwork",
+    "isFake": false,
+    "confidence": 94,
+    "views": "2.4M",
+    "uploadDate": "2 days ago"
+  },
+  {
+    "id": 2,
+    "thumbnail": "https://via.placeholder.com/400x300/C1694F/FFFFFF?text=Video+2",
+    "title": "Political Speech - Deepfake Alert Detected",
+    "channel": "Politics Today",
+    "sourceLink": "https://www.youtube.com/channel/PoliticsToday",
+    "isFake": true,
+    "confidence": 87,
+    "views": "1.8M",
+    "uploadDate": "1 day ago"
+  },
+  {
+    "id": 3,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+3",
+    "title": "Tech Product Review - Authentic Content",
+    "channel": "Tech Reviews",
+    "sourceLink": "https://www.youtube.com/channel/TechReviews",
+    "isFake": false,
+    "confidence": 96,
+    "views": "890K",
+    "uploadDate": "3 hours ago"
+  },
+  {
+    "id": 4,
+    "thumbnail": "https://via.placeholder.com/400x300/C1694F/FFFFFF?text=Video+4",
+    "title": "Viral Dance Challenge - Manipulated Video Warning",
+    "channel": "Entertainment Hub",
+    "sourceLink": "https://www.youtube.com/channel/EntertainmentHub",
+    "isFake": true,
+    "confidence": 92,
+    "views": "3.2M",
+    "uploadDate": "5 hours ago"
+  },
+  {
+    "id": 5,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+5",
+    "title": "Breaking News Report - Verified Authentic",
+    "channel": "Global News",
+    "sourceLink": "https://www.youtube.com/channel/GlobalNews",
+    "isFake": false,
+    "confidence": 98,
+    "views": "1.2M",
+    "uploadDate": "1 hour ago"
+  },
+  {
+    "id": 6,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+6",
+    "title": "Educational Tutorial - Safe to Share",
+    "channel": "Learn Academy",
+    "sourceLink": "https://www.youtube.com/channel/LearnAcademy",
+    "isFake": false,
+    "confidence": 95,
+    "views": "456K",
+    "uploadDate": "6 hours ago"
+  },
+  {
+    "id": 7,
+    "thumbnail": "https://via.placeholder.com/400x300/C1694F/FFFFFF?text=Video+7",
+    "title": "Celebrity Endorsement Clip – Flagged as Fake",
+    "channel": "Showbiz Insider",
+    "sourceLink": "https://www.youtube.com/channel/ShowbizInsider",
+    "isFake": true,
+    "confidence": 89,
+    "views": "4.1M",
+    "uploadDate": "8 hours ago"
+  },
+  {
+    "id": 8,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+8",
+    "title": "Wildlife Documentary Footage – Authentic",
+    "channel": "Nature Watch",
+    "sourceLink": "https://www.youtube.com/channel/NatureWatch",
+    "isFake": false,
+    "confidence": 97,
+    "views": "520K",
+    "uploadDate": "12 hours ago"
+  },
+  {
+    "id": 9,
+    "thumbnail": "https://via.placeholder.com/400x300/C1694F/FFFFFF?text=Video+9",
+    "title": "Audio Deepfake of Political Leader – Detected",
+    "channel": "Voice Forensics",
+    "sourceLink": "https://www.youtube.com/channel/VoiceForensics",
+    "isFake": true,
+    "confidence": 85,
+    "views": "1.1M",
+    "uploadDate": "2 days ago"
+  },
+  {
+    "id": 10,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+10",
+    "title": "Startup Pitch Live – Verified Real",
+    "channel": "Entrepreneur Hub",
+    "sourceLink": "https://www.youtube.com/channel/EntrepreneurHub",
+    "isFake": false,
+    "confidence": 93,
+    "views": "600K",
+    "uploadDate": "1 day ago"
+  },
+  {
+    "id": 11,
+    "thumbnail": "https://via.placeholder.com/400x300/C1694F/FFFFFF?text=Video+11",
+    "title": "Influencer Post – Deepfake Advertising Alert",
+    "channel": "Marketing Watch",
+    "sourceLink": "https://www.youtube.com/channel/MarketingWatch",
+    "isFake": true,
+    "confidence": 90,
+    "views": "2.7M",
+    "uploadDate": "3 hours ago"
+  },
+  {
+    "id": 12,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+12",
+    "title": "Health Advice Session – Authentic Expert",
+    "channel": "Wellness Central",
+    "sourceLink": "https://www.youtube.com/channel/WellnessCentral",
+    "isFake": false,
+    "confidence": 96,
+    "views": "320K",
+    "uploadDate": "10 hours ago"
+  },
+  {
+    "id": 13,
+    "thumbnail": "https://via.placeholder.com/400x300/C1694F/FFFFFF?text=Video+13",
+    "title": "Deepfake Sports Clip – Detected Manipulation",
+    "channel": "Sports Analytics",
+    "sourceLink": "https://www.youtube.com/channel/SportsAnalytics",
+    "isFake": true,
+    "confidence": 88,
+    "views": "3.9M",
+    "uploadDate": "7 hours ago"
+  },
+  {
+    "id": 14,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+14",
+    "title": "Cooking Masterclass – Real Chef Live",
+    "channel": "Culinary Arts",
+    "sourceLink": "https://www.youtube.com/channel/CulinaryArts",
+    "isFake": false,
+    "confidence": 94,
+    "views": "730K",
+    "uploadDate": "5 hours ago"
+  },
+  {
+    "id": 15,
+    "thumbnail": "https://via.placeholder.com/400x300/C1694F/FFFFFF?text=Video+15",
+    "title": "Fake News Clip Making Rounds – Verified Fake",
+    "channel": "Fact Checkers",
+    "sourceLink": "https://www.youtube.com/channel/FactCheckers",
+    "isFake": true,
+    "confidence": 86,
+    "views": "2.1M",
+    "uploadDate": "1 day ago"
+  },
+  {
+    "id": 16,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+16",
+    "title": "Science Experiment Stream – Authentic Live",
+    "channel": "Science Live",
+    "sourceLink": "https://www.youtube.com/channel/ScienceLive",
+    "isFake": false,
+    "confidence": 95,
+    "views": "410K",
+    "uploadDate": "2 hours ago"
+  },
+  {
+    "id": 17,
+    "thumbnail": "https://via.placeholder.com/400x300/C1694F/FFFFFF?text=Video+17",
+    "title": "Celebrity Speech Remix – Detected Deepfake",
+    "channel": "Pop Culture Lab",
+    "sourceLink": "https://www.youtube.com/channel/PopCultureLab",
+    "isFake": true,
+    "confidence": 91,
+    "views": "3.0M",
+    "uploadDate": "4 hours ago"
+  },
+  {
+    "id": 18,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+18",
+    "title": "Travel Vlog – Real Footage Verified",
+    "channel": "Adventure Diaries",
+    "sourceLink": "https://www.youtube.com/channel/AdventureDiaries",
+    "isFake": false,
+    "confidence": 92,
+    "views": "1.5M",
+    "uploadDate": "6 hours ago"
+  },
+  {
+    "id": 19,
+    "thumbnail": "https://via.placeholder.com/400x300/C1694F/FFFFFF?text=Video+19",
+    "title": "Historical Documentary – Authentic Archives",
+    "channel": "History Vault",
+    "sourceLink": "https://www.youtube.com/channel/HistoryVault",
+    "isFake": false,
+    "confidence": 97,
+    "views": "1.9M",
+    "uploadDate": "12 hours ago"
+  },
+  {
+    "id": 20,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+20",
+    "title": "Financial Market Live – Real-Time Analysis",
+    "channel": "Market Insights",
+    "sourceLink": "https://www.youtube.com/channel/MarketInsights",
+    "isFake": false,
+    "confidence": 93,
+    "views": "860K",
+    "uploadDate": "9 hours ago"
+  }
+]
