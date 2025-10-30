@@ -21,7 +21,7 @@ const Button: React.FC<ButtonProps> = ({
         variant === 'primary'
           ? 'bg-blue-600 text-white hover:bg-blue-700'
           : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-      } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
     >
       {children}
     </button>

@@ -92,13 +92,15 @@ const Landing: React.FC = () => {
     <>
       {/* Hero Section with Video Background */}
       <div className="relative h-screen w-screen overflow-hidden">
-        <video
+        <image
           className="absolute inset-0 w-full h-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"
+          src ='/home/rs/Projects/MUJ/src/assets/landing-bg.jpg'
+          alt='loading'
+        //   autoPlay
+        //   muted
+        //   loop
+        //   playsInline
+        
         />
         <div
           className="absolute inset-0 flex flex-col justify-center items-center text-center px-4"

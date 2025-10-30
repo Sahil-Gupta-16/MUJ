@@ -1,26 +1,62 @@
 [
   {
     "id": 1,
-    "title": "Celebrity Speech Clip",
-    "thumbnail": "/images/thumb1.jpg",
-    "videoUrl": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-    "confidence": 92,
-    "isFake": true
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+1",
+    "title": "Celebrity Interview Goes Viral - Authenticity Verified",
+    "channel": "News Network",
+    "isFake": false,
+    "confidence": 94,
+    "views": "2.4M",
+    "uploadDate": "2 days ago"
   },
   {
     "id": 2,
-    "title": "News Anchor Segment",
-    "thumbnail": "/images/thumb2.jpg",
-    "videoUrl": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-    "confidence": 15,
-    "isFake": false
+    "thumbnail": "https://via.placeholder.com/400x300/C1694F/FFFFFF?text=Video+2",
+    "title": "Political Speech - Deepfake Alert Detected",
+    "channel": "Politics Today",
+    "isFake": true,
+    "confidence": 87,
+    "views": "1.8M",
+    "uploadDate": "1 day ago"
   },
   {
     "id": 3,
-    "title": "Political Debate Highlights",
-    "thumbnail": "/images/thumb3.jpg",
-    "videoUrl": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-    "confidence": 80,
-    "isFake": true
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+3",
+    "title": "Tech Product Review - Authentic Content",
+    "channel": "Tech Reviews",
+    "isFake": false,
+    "confidence": 96,
+    "views": "890K",
+    "uploadDate": "3 hours ago"
+  },
+  {
+    "id": 4,
+    "thumbnail": "https://via.placeholder.com/400x300/C1694F/FFFFFF?text=Video+4",
+    "title": "Viral Dance Challenge - Manipulated Video Warning",
+    "channel": "Entertainment Hub",
+    "isFake": true,
+    "confidence": 92,
+    "views": "3.2M",
+    "uploadDate": "5 hours ago"
+  },
+  {
+    "id": 5,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+5",
+    "title": "Breaking News Report - Verified Authentic",
+    "channel": "Global News",
+    "isFake": false,
+    "confidence": 98,
+    "views": "1.2M",
+    "uploadDate": "1 hour ago"
+  },
+  {
+    "id": 6,
+    "thumbnail": "https://via.placeholder.com/400x300/A0674B/FFFFFF?text=Video+6",
+    "title": "Educational Tutorial - Safe to Share",
+    "channel": "Learn Academy",
+    "isFake": false,
+    "confidence": 95,
+    "views": "456K",
+    "uploadDate": "6 hours ago"
   }
 ]

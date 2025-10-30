@@ -15,7 +15,7 @@ const theme = {
     },
     
     // Primary color - medium warm brown for buttons and highlights
-    primary: '#A0674B',       // Warm terracotta brown - main interactive elements
+    primary: '#7E513B',       // Warm terracotta brown - main interactive elements
     
     // Secondary color - lighter brown for borders, secondary UI
     secondary: '#C8B6A6',     // Light taupe brown for subtle elements

@@ -1,9 +1,8 @@
 /**
  * src/layouts/DashboardLayout.tsx
  * 
- * Professional dashboard layout component.
- * Incorporates Header, Sidebar, Footer with consistent light theme styling using theme.ts.
- * Applies rounded borders, subtle shadows, and clean spacing for polished UI.
+ * Modern dashboard layout with improved structure.
+ * Clean, spacious design with proper background and content separation.
  */
 
 import React, { ReactNode } from 'react';
@@ -18,19 +17,16 @@ interface Props {
 
 const DashboardLayout: React.FC<Props> = ({ children }) => (
   <div
-    className="flex flex-col h-screen"
-    style={{ backgroundColor: theme.colors.background.light, color: theme.colors.textPrimary }}
+    className="flex flex-col min-h-screen"
+    style={{ 
+      backgroundColor: theme.colors.background.light,
+      fontFamily: theme.fonts.base 
+    }}
   >
-    <Header />
-    <div className="flex flex-1 overflow-hidden rounded-lg shadow-lg mx-4 my-4 bg-white">
+    {/* <Header /> */}
+    <div className="flex flex-1">
       <Sidebar />
-      <main
-        className="flex-1 overflow-auto p-8 rounded-r-lg"
-        style={{
-          boxShadow: 'inset 0 0 10px rgba(0,0,0,0.05)',
-          fontFamily: theme.fonts.base,
-        }}
-      >
+      <main className="flex-1 p-8 overflow-auto">
         {children}
       </main>
     </div>
