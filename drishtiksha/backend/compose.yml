@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  postgres:
+    image: docker.io/library/postgres:16
+    container_name: muj-postgres-db
+    environment:
+      POSTGRES_USER: videosign
+      POSTGRES_PASSWORD: secure_pass
+      POSTGRES_DB: videosign_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:

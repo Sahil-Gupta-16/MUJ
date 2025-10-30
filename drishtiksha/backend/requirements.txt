@@ -1,0 +1,28 @@
+
+torch==2.0.1+cpu
+torchvision==0.15.2+cpu
+torchaudio==2.0.2+cpu
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Scientific stack
+numpy>=1.24.0
+scipy>=1.10.0
+pillow>=10.0.0
+opencv-python-headless>=4.8.0  # no GUI overhead
+
+# FastAPI backend
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+python-multipart>=0.0.6
+
+# Task management / DB
+psycopg2-binary>=2.9.0
+celery>=5.3.0
+redis>=4.6.0
+
+# Video & hash utilities
+videohash>=3.0.1
+
+# Optional lightweight utils
+tqdm>=4.65.0
+
