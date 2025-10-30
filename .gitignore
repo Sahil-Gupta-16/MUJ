@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -23,3 +24,8 @@ dist-ssr
 *.sln
 *.sw?
 src/context/
+=======
+ignored
+.venv
+__pycache__/
+>>>>>>> origin/yeet

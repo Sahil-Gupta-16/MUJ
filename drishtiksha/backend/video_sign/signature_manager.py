@@ -174,33 +174,55 @@ class VideoSignatureManager:
             return None
     
     def get_all_signatures(self, limit=50, offset=0):
-        """Get all stored video signatures"""
+        """Get all stored video signatures - FIXED"""
         try:
             conn = psycopg2.connect(**self.db_config)
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
+            # Get latest analysis for each video
             cursor.execute("""
-                SELECT vs.id, vs.filename, vs.file_size, vs.duration_seconds, 
-                       vs.fps, vs.total_frames, vs.created_at,
-                       ar.overall_prediction, ar.overall_confidence,
-                       ar.authentic_frames, ar.deepfake_frames, ar.fake_percentage
+                SELECT 
+                    vs.id, 
+                    vs.filename, 
+                    vs.file_size, 
+                    vs.duration_seconds, 
+                    vs.fps, 
+                    vs.total_frames, 
+                    vs.created_at,
+                    COALESCE(ar.overall_prediction, 'UNKNOWN') as overall_prediction,
+                    COALESCE(ar.overall_confidence, 0) as overall_confidence,
+                    COALESCE(ar.authentic_frames, 0) as authentic_frames,
+                    COALESCE(ar.deepfake_frames, 0) as deepfake_frames,
+                    COALESCE(ar.fake_percentage, 0) as fake_percentage
                 FROM video_signatures vs
-                LEFT JOIN analysis_results ar ON vs.id = ar.video_signature_id
+                LEFT JOIN LATERAL (
+                    SELECT 
+                        overall_prediction,
+                        overall_confidence,
+                        authentic_frames,
+                        deepfake_frames,
+                        fake_percentage
+                    FROM analysis_results
+                    WHERE video_signature_id = vs.id
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                ) ar ON TRUE
                 ORDER BY vs.created_at DESC
                 LIMIT %s OFFSET %s
             """, (limit, offset))
             
             results = cursor.fetchall()
             
-            cursor.execute("SELECT COUNT(*) FROM video_signatures")
-            total = cursor.fetchone()[0]
+            # Get total count
+            cursor.execute("SELECT COUNT(*) as total FROM video_signatures")
+            total = cursor.fetchone()['total']
             
             cursor.close()
             conn.close()
             
             return {'total': total, 'videos': [dict(r) for r in results]}
         except Exception as e:
-            print(f"✗ Query error: {e}")
+            print(f"✗ Query error in get_all_signatures: {e}")
             return None
     
     def get_signature_detail(self, video_sig_id):
@@ -210,9 +232,29 @@ class VideoSignatureManager:
             cursor = conn.cursor(cursor_factory=RealDictCursor)
             
             cursor.execute("""
-                SELECT vs.*, ar.analysis_json, ar.overall_prediction, ar.overall_confidence
+                SELECT 
+                    vs.id,
+                    vs.video_hash,
+                    vs.filename,
+                    vs.file_size,
+                    vs.duration_seconds,
+                    vs.fps,
+                    vs.total_frames,
+                    vs.created_at,
+                    ar.analysis_json,
+                    ar.overall_prediction,
+                    ar.overall_confidence
                 FROM video_signatures vs
-                LEFT JOIN analysis_results ar ON vs.id = ar.video_signature_id
+                LEFT JOIN LATERAL (
+                    SELECT 
+                        analysis_json,
+                        overall_prediction,
+                        overall_confidence
+                    FROM analysis_results
+                    WHERE video_signature_id = vs.id
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                ) ar ON TRUE
                 WHERE vs.id = %s
             """, (video_sig_id,))
             
@@ -222,5 +264,5 @@ class VideoSignatureManager:
             
             return dict(result) if result else None
         except Exception as e:
-            print(f"✗ Query error: {e}")
+            print(f"✗ Query error in get_signature_detail: {e}")
             return None

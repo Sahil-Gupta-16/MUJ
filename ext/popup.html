@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 10px;
+            width: 380px;
+        }
+
+        #status {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        #result {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 10px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 150px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .buttons {
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 8px 12px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="status">Click on a link on any page.</div>
+    <div id="result" class="hidden"></div>
+    <div class="buttons">
+        <button id="resetBtn" class="hidden">Upload another</button>
+        <button id="closeBtn">Close</button>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>
