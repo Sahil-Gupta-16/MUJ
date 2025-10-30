@@ -1,0 +1,12 @@
+
+@import 'tailwindcss';
+
+/* Global background colors */
+body {
+  @apply bg-white text-gray-900;
+  color:black
+}
+/* 
+.dark body {
+  @apply bg-black text-white;
+} */

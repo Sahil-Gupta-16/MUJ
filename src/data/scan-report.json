@@ -1,0 +1,10 @@
+{
+  "videoName": "sample_video.mp4",
+  "detectionConfidence": 87,
+  "result": "Likely Deepfake",
+  "details": [
+    { "label": "Lip-sync mismatch", "score": "High" },
+    { "label": "Facial expression inconsistency", "score": "Medium" },
+    { "label": "Temporal inconsistency", "score": "High" }
+  ]
+}

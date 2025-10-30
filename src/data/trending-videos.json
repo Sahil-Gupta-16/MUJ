@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Celebrity Speech Clip",
+    "thumbnail": "/images/thumb1.jpg",
+    "videoUrl": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+    "confidence": 92,
+    "isFake": true
+  },
+  {
+    "id": 2,
+    "title": "News Anchor Segment",
+    "thumbnail": "/images/thumb2.jpg",
+    "videoUrl": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+    "confidence": 15,
+    "isFake": false
+  },
+  {
+    "id": 3,
+    "title": "Political Debate Highlights",
+    "thumbnail": "/images/thumb3.jpg",
+    "videoUrl": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+    "confidence": 80,
+    "isFake": true
+  }
+]
