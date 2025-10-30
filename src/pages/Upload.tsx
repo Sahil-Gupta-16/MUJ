@@ -11,7 +11,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload as UploadIcon, File, CheckCircle, AlertCircle, Download, X, Image as ImageIcon, Loader, Play, Pause, ExternalLink } from 'lucide-react';
+import { Upload as UploadIcon, File, CheckCircle, AlertCircle, Download, X, Image as ImageIcon, Loader, Play, Pause, ExternalLink, Clapperboard } from 'lucide-react';
 import DashboardLayout from '../layouts/DashboardLayout';
 import StatsCard from '../components/StatsCard';
 import theme from '../config/theme';
@@ -362,7 +362,7 @@ const VideoPlayer: React.FC<{ videoUrl: string; mediaName: string }> = ({ videoU
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        🎬 Video Preview
+        <span className="inline-flex items-center gap-1"><Clapperboard size={14} /> Video Preview</span>
       </motion.div>
 
       <div className="relative aspect-video bg-black">
@@ -700,7 +700,7 @@ const Upload: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1
-            className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+            className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text  "
             style={{ fontFamily: theme.fonts.base }}
           >
             Upload Media for Analysis

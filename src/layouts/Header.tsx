@@ -96,7 +96,7 @@ const Header: React.FC = () => {
               </div>
             </motion.div>
             <span
-              className="font-extrabold text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent hover:opacity-80 transition"
+              className="font-extrabold text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text   hover:opacity-80 transition"
               style={{ fontFamily: theme.fonts.heading }}
             >
               DeepfakeGuard

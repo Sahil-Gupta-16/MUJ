@@ -47,7 +47,7 @@ function App() {
           <Route path="/history" element={<History />} />
 
           {/* Fallback - Redirect to dashboard */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </ReportProvider>

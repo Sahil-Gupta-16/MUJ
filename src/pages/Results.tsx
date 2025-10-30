@@ -18,6 +18,13 @@ import {
   Eye,
   Gauge,
   ExternalLink,
+  BarChart3,
+  Clapperboard,
+  Image as ImageIcon,
+  ClipboardList,
+  FileText,
+  Tv,
+  Search,
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -117,8 +124,9 @@ const ModelScoreChart: React.FC<{
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
     >
-      <h3 className="text-lg font-bold mb-6" style={{ color: theme.colors.textPrimary }}>
-        📊 Model Confidence Scores
+      <h3 className="text-lg font-bold mb-6 flex items-center gap-2" style={{ color: theme.colors.textPrimary }}>
+        <BarChart3 size={18} />
+        Model Confidence Scores
       </h3>
       
       <div className="space-y-5">
@@ -344,7 +352,17 @@ const Results: React.FC = () => {
                   className="text-3xl font-black mb-1"
                   style={{ color: theme.colors.textPrimary }}
                 >
-                  {videoData.isFake ? '⚠️ Deepfake Detected' : '✓ Authentic Content'}
+                  {videoData.isFake ? (
+                    <span className="inline-flex items-center gap-2">
+                      <AlertCircle size={22} />
+                      Deepfake Detected
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-2">
+                      <CheckCircle size={22} />
+                      Authentic Content
+                    </span>
+                  )}
                 </h1>
                 <p className="text-sm" style={{ color: theme.colors.textSecondary }}>
                   Analysis completed at {new Date().toLocaleTimeString()}
@@ -386,7 +404,7 @@ const Results: React.FC = () => {
               {isVideo ? (
                 <div className="relative aspect-video bg-black">
                   <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-white text-xs font-bold z-20" style={{ backgroundColor: theme.colors.primary }}>
-                    🎬 Video
+                    <span className="inline-flex items-center gap-1"><Clapperboard size={14} /> Video</span>
                   </div>
                   <iframe
                     width="100%"
@@ -402,7 +420,7 @@ const Results: React.FC = () => {
               ) : (
                 <div className="relative aspect-video">
                   <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-white text-xs font-bold z-20" style={{ backgroundColor: theme.colors.secondary }}>
-                    🖼️ Image
+                    <span className="inline-flex items-center gap-1"><ImageIcon size={14} /> Image</span>
                   </div>
                   <img
                     src={videoData.thumbnail}
@@ -427,12 +445,13 @@ const Results: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
             >
-              <h3 className="text-lg font-bold mb-4" style={{ color: theme.colors.textPrimary }}>
-                📋 Metadata
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: theme.colors.textPrimary }}>
+                <ClipboardList size={18} />
+                Metadata
               </h3>
               <div className="grid grid-cols-2 gap-3">
-                <MetadataCard title="Title" value={videoData.title.substring(0, 20) + '...'} icon={<span>📝</span>} index={0} />
-                <MetadataCard title="Channel" value={videoData.channel} icon={<span>📺</span>} index={1} />
+                <MetadataCard title="Title" value={videoData.title.substring(0, 20) + '...'} icon={<FileText size={16} />} index={0} />
+                <MetadataCard title="Channel" value={videoData.channel} icon={<Tv size={16} />} index={1} />
                 <MetadataCard 
                   title="Views" 
                   value={videoData.views || '0'} 
@@ -457,8 +476,9 @@ const Results: React.FC = () => {
               transition={{ delay: 0.35 }}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold" style={{ color: theme.colors.textPrimary }}>
-                  🔍 Analysis Metrics
+                <h3 className="text-lg font-bold flex items-center gap-2" style={{ color: theme.colors.textPrimary }}>
+                  <Search size={18} />
+                  Analysis Metrics
                 </h3>
                 <motion.div
                   className="text-center px-3 py-1 rounded-lg"

@@ -46,9 +46,9 @@ const Dashboard: React.FC = () => {
         transition={{ duration: 0.5 }}
       >
         {/* Page Header */}
-        <div className="mb-8">
+        <div className="mb-8 text-black">
           <h1
-            className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+            className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text "
             style={{ fontFamily: theme.fonts.base }}
           >
             Deepfake Detection Dashboard
@@ -69,19 +69,19 @@ const Dashboard: React.FC = () => {
           <StatsCard
             title="Deepfakes Detected"
             value={totalFakes.toString()}
-            icon={<ShieldAlert size={42} />}
+            icon={<ShieldAlert size={48} />}
             color={theme.colors.error}
           />
           <StatsCard
             title="Authentic Videos"
             value={totalAuthentic.toString()}
-            icon={<ShieldCheck size={42} />}
+            icon={<ShieldCheck size={48} />}
             color={theme.colors.success}
           />
           <StatsCard
             title="Avg Confidence"
             value={`${avgConfidence}%`}
-            icon={<BarChart3 size={42} />}
+            icon={<BarChart3 size={48} />}
             color={theme.colors.accent}
           />
         </div>
@@ -154,7 +154,7 @@ const Dashboard: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <motion.button
+          {/* <motion.button
             onClick={() => navigate('/trending')}
             className="px-8 py-4 rounded-xl font-bold text-lg flex items-center space-x-3"
             style={{
@@ -170,7 +170,7 @@ const Dashboard: React.FC = () => {
           >
             <span>Explore All Videos</span>
             <ArrowRight size={42} />
-          </motion.button>
+          </motion.button> */}
         </motion.div>
       </motion.div>
     </DashboardLayout>

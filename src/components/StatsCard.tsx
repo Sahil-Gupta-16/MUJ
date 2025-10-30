@@ -11,7 +11,7 @@ import theme from '../config/theme';
 interface StatsCardProps {
   title: string;
   value: string;
-  icon: string;
+  icon: React.ReactNode;
   color: string;
 }
 
@@ -47,7 +47,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, color }) => (
         </p>
       </div>
       <div 
-        className="text-4xl opacity-20"
+        className="text-4xl opacity-[.9"
         style={{ color }}
       >
         {icon}
