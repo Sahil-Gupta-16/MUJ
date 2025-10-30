@@ -1,0 +1,3 @@
+ignored
+.venv
+__pycache__/
