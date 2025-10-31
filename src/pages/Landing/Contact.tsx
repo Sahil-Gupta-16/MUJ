@@ -38,7 +38,7 @@ const Contact: React.FC = () => {
           background: `linear-gradient(135deg, ${theme.colors.primary}08 0%, ${theme.colors.secondary}08 100%)`,
         }}
       >
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-screen mx-auto text-center">
           <motion.h1 className="text-5xl font-black mb-6" initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
             Get in Touch
           </motion.h1>

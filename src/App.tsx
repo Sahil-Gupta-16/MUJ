@@ -33,7 +33,7 @@ function App() {
         {/* Main Routes */}
         <Routes>
           {/* Landing Page */}
-          <Route path="/" element={<Landing />} />
+          <Route path="/" element={<Dashboard />} />
 
           {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard />} />
@@ -56,7 +56,7 @@ function App() {
           {/* Fallback - Redirect to dashboard */}
           <Route path="*" element={<Navigate to="/" replace />} />
 
-              <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/roadmap" element={<Roadmap />} />

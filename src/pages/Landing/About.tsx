@@ -28,7 +28,7 @@ const About: React.FC = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-screen mx-auto text-center">
           <motion.h1
             className="text-5xl font-black mb-6"
             initial={{ y: -30, opacity: 0 }}
@@ -106,7 +106,7 @@ const About: React.FC = () => {
 
       {/* Timeline */}
       <motion.section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-screen mx-auto">
           <h2 className="text-4xl font-black text-center mb-12">Our Journey</h2>
           <div className="space-y-8">
             {timeline.map((item, i) => (

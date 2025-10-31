@@ -91,11 +91,11 @@ const Landing: React.FC = () => {
   return (
     <>
       {/* Hero Section with Video Background */}
-      <div className="relative h-screen w-screen overflow-hidden">
+      <div className="relative h-screen w-screen overflow-hidden Back">
         <image
           className="absolute inset-0 w-full h-full object-cover"
-          src ='/home/rs/Projects/MUJ/src/assets/landing-bg.jpg'
-          alt='loading'
+          href ='/home/rs/Projects/MUJ/src/assets/bg.jpg'
+        //   alt='loading'
         //   autoPlay
         //   muted
         //   loop
@@ -104,8 +104,11 @@ const Landing: React.FC = () => {
         />
         <div
           className="absolute inset-0 flex flex-col justify-center items-center text-center px-4"
-          style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)' }}
-        >
+          style={{
+    backgroundImage: `url('/home/rs/Projects/MUJ/src/assets/bg.jpg')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  }}>
           <motion.h1
             className="text-6xl font-extrabold mb-6"
             style={{ color: theme.colors.primary, fontFamily: theme.fonts.base }}
