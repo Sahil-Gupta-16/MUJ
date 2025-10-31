@@ -16,6 +16,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import StatsCard from '../components/StatsCard';
 import theme from '../config/theme';
 import { useReports } from '../context/ReportContext';
+import { uploadVideoToAPI } from '../lib/api';
 
 interface ScanResult {
   mediaName: string;
@@ -536,140 +537,59 @@ const Upload: React.FC = () => {
     setIsDragging(false);
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!file) return;
 
-    const initialProgress: ModelProgress[] = models.map((model) => ({
-      name: model,
-      status: 'pending',
-      progress: 0,
-      processingTime: '0.0s',
-    }));
+    try {
+      setIsProcessingModalOpen(true);
+      setOverallProgress(10);
 
-    setModelProgress(initialProgress);
-    setOverallProgress(0);
-    setIsProcessingModalOpen(true);
-    setResult(null);
+      const report = await uploadVideoToAPI(file);
 
-    const videoUrl = URL.createObjectURL(file);
-    let completedCount = 0;
-    const baseDelay = 800;
-    const isFake = Math.random() > 0.5;
+      const mediaType = getMediaType(file);
+      const overallConf = report?.summary?.overall_confidence ?? 0;
+      const confidencePct = Math.round(overallConf * 100);
+      const isFake = (report?.summary?.overall_prediction ?? 'REAL') === 'FAKE';
 
-    models.forEach((model, modelIndex) => {
-      setTimeout(() => {
-        setModelProgress((prev) =>
-          prev.map((m, idx) =>
-            idx === modelIndex ? { ...m, status: 'processing', progress: 10 } : m
-          )
-        );
+      // Persist lightweight report in history
+      addReport({
+        mediaName: file.name,
+        mediaType,
+        title: isFake ? 'Deepfake Detected - ' + file.name : 'Authentic Content - ' + file.name,
+        channel: 'API Upload',
+        confidence: confidencePct,
+        isFake,
+        status: 'completed',
+        processingTime: '-',
+        timestamp: new Date().toISOString(),
+        fileSize: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+        model: 'Ensemble',
+        views: '0',
+      });
 
-        const progressInterval = setInterval(() => {
-          setModelProgress((prev) => {
-            const updated = [...prev];
-            if (updated[modelIndex].progress < 90) {
-              updated[modelIndex].progress += Math.random() * 20;
-              if (updated[modelIndex].progress > 90) updated[modelIndex].progress = 90;
-            }
-            return updated;
-          });
-        }, 300);
-
-        setTimeout(() => {
-          clearInterval(progressInterval);
-          const modelConfidence = Math.floor(Math.random() * 20) + 80;
-          const processingTime = (Math.random() * 1.5 + 1).toFixed(1) + 's';
-
-          setModelProgress((prev) => {
-            const updated = [...prev];
-            updated[modelIndex] = {
-              ...updated[modelIndex],
-              status: 'completed',
-              progress: 100,
-              confidence: modelConfidence,
-              processingTime,
-            };
-            return updated;
-          });
-
-          completedCount++;
-          setOverallProgress(Math.round((completedCount / models.length) * 100));
-
-          if (completedCount === models.length) {
-            setTimeout(() => {
-              setIsProcessingModalOpen(false);
-
-              const mediaType = getMediaType(file);
-              const totalProcessingTime = (Math.random() * 3 + 2).toFixed(1) + 's';
-              const confidence = Math.floor(Math.random() * 20) + 80;
-              const selectedModel = models[Math.floor(Math.random() * models.length)];
-
-              const modelScores = models.map((name, idx) => ({
-                name,
-                score: Math.floor(Math.random() * 20) + 75,
-                color: modelColors[idx],
-              }));
-
-              const scanResult: ScanResult = {
-                mediaName: file.name,
-                mediaType,
-                isFake,
-                confidence,
-                thumbnail: 'https://via.placeholder.com/400x300/3b82f6/FFFFFF?text=Scanned+Media',
-                videoUrl: mediaType === 'video' ? videoUrl : undefined,
-                modelScores,
-                details: [
-                  { label: 'Lip-sync analysis', score: isFake ? 'High' : 'Low' },
-                  { label: 'Facial expression consistency', score: isFake ? 'Medium' : 'High' },
-                  { label: 'Temporal coherence', score: isFake ? 'High' : 'Low' },
-                  { label: 'Audio-visual alignment', score: isFake ? 'Medium' : 'High' },
-                  { label: 'Pixel artifacts detection', score: isFake ? 'High' : 'Low' },
-                  { label: 'Frequency analysis', score: isFake ? 'Medium' : 'High' },
-                ],
-                uploadTime: new Date().toLocaleString(),
-                processingTime: totalProcessingTime,
-              };
-
-              setResult(scanResult);
-
-              addReport({
-                mediaName: file.name,
-                mediaType,
-                title: isFake ? 'Deepfake Detected - ' + file.name : 'Authentic Content - ' + file.name,
-                channel: 'User Upload',
-                confidence,
-                isFake,
-                status: 'completed',
-                processingTime: totalProcessingTime,
-                timestamp: new Date().toISOString(),
-                fileSize: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
-                model: selectedModel,
-                views: '0',
-              });
-
-              setTimeout(() => {
-                navigate('/results', {
-                  state: {
-                    videoData: {
-                      id: Date.now(),
-                      thumbnail: scanResult.thumbnail,
-                      title: scanResult.mediaName,
-                      channel: 'User Upload',
-                      sourceLink: mediaType === 'video' ? videoUrl : '#',
-                      isFake: scanResult.isFake,
-                      confidence: scanResult.confidence,
-                      views: '0',
-                      uploadDate: new Date().toLocaleDateString(),
-                      mediaType: mediaType,
-                    },
-                  },
-                });
-              }, 2000);
-            }, 500);
-          }
-        }, 2000 + modelIndex * 500);
-      }, baseDelay + modelIndex * 1000);
-    });
+      // Navigate to Results page with required state
+      navigate('/results', {
+        state: {
+          videoData: {
+            id: Date.now(),
+            thumbnail: '',
+            title: file.name,
+            channel: 'API Upload',
+            sourceLink: mediaType === 'video' ? URL.createObjectURL(file) : '#',
+            isFake,
+            confidence: confidencePct,
+            views: '0',
+            uploadDate: new Date().toLocaleDateString(),
+            mediaType,
+          },
+        },
+      });
+    } catch (e: any) {
+      alert(e?.message ? `Upload failed: ${e.message}` : 'Upload failed');
+    } finally {
+      setOverallProgress(100);
+      setIsProcessingModalOpen(false);
+    }
   };
 
   const downloadReport = () => {
