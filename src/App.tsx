@@ -16,6 +16,13 @@ import SystemMonitoring from './pages/SystemMonitoring';
 import History from './pages/History';
 import { ReportProvider } from './context/ReportContext';
 
+import Home from "./pages/Landing/Home";
+import About from "./pages/Landing/About";
+import HowItWorks from "./pages/Landing/HowItWorks";
+import Roadmap from "./pages/Landing/RoadMap";
+
+import Contact from "./pages/Landing/Contact";
+
 function App() {
   return (
     <ReportProvider>
@@ -48,6 +55,12 @@ function App() {
 
           {/* Fallback - Redirect to dashboard */}
           <Route path="*" element={<Navigate to="/" replace />} />
+
+              <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/roadmap" element={<Roadmap />} />
+        <Route path="/contact" element={<Contact />} />
         </Routes>
       </Router>
     </ReportProvider>

@@ -483,7 +483,7 @@ const History: React.FC = () => {
 
         {/* Footer */}
         <div className="mt-12 text-center text-xs mb-6" style={{ color: theme.colors.textSecondary }}>
-          <p>© 2025 DeepfakeGuard. All Rights Reserved.</p>
+          <p>© 2025 DeeFend. All Rights Reserved.</p>
         </div>
       </motion.div>
     </DashboardLayout>

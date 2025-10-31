@@ -505,7 +505,7 @@ const SystemMonitoring: React.FC = () => {
 
         {/* Footer */}
         <div className="mt-12 text-center text-xs" style={{ color: theme.colors.textSecondary }}>
-          <p>© 2025 DeepfakeGuard. Last updated: {new Date().toLocaleString()}</p>
+          <p>© 2025 DeeFend. Last updated: {new Date().toLocaleString()}</p>
         </div>
       </motion.div>
     </DashboardLayout>
