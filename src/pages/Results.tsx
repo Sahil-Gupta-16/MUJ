@@ -31,6 +31,9 @@ import jsPDF from 'jspdf';
 import DashboardLayout from '../layouts/DashboardLayout';
 import theme from '../config/theme';
 
+import {  ArrowRight } from 'lucide-react';
+
+
 interface VideoData {
   id: number;
   thumbnail: string;
@@ -74,7 +77,7 @@ const DetailMetric: React.FC<{
 
   return (
    <motion.div
-      className="flex items-center justify-between p-3 rounded-lg"
+      className="flex items-center justify-between p-3 rounded-lg items-center"
       style={{
         backgroundColor: scoreColor + '10',
         border: `1px solid ${scoreColor}30`,
@@ -113,21 +116,50 @@ const DetailMetric: React.FC<{
 };
 
 // Model Score Bar Chart
+
 const ModelScoreChart: React.FC<{ 
   modelScores: Array<{ name: string; score: number; color: string }>;
-}> = ({ modelScores }) => {
+  videoData?: any;
+}> = ({ modelScores, videoData }) => {
+  const navigate = useNavigate();
+
+  const handleViewDetails = () => {
+    navigate('/model-details', {
+      state: {
+        modelScores,
+        videoData,
+      },
+    });
+  };
+
   return (
-   <motion.div
+    <motion.div
       className="relative w-full rounded-xl bg-white p-6 shadow-lg min-h-[400px]"
       style={{ border: `1px solid ${theme.colors.neutral.light}` }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
     >
-      <h3 className="text-lg font-bold mb-6 flex items-center gap-2" style={{ color: theme.colors.textPrimary }}>
-        <BarChart3 size={18} />
-        Model Confidence Scores
-      </h3>
+      {/* Header with View Details Button */}
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-bold flex items-center gap-2" style={{ color: theme.colors.textPrimary }}>
+          <BarChart3 size={18} />
+          Model Confidence Scores
+        </h3>
+        <motion.button
+          onClick={handleViewDetails}
+          className="px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2"
+          style={{
+            backgroundColor: theme.colors.primary,
+            color: 'white',
+          }}
+          whileHover={{ scale: 1.05, boxShadow: `0 8px 16px ${theme.colors.primary}40` }}
+          whileTap={{ scale: 0.95 }}
+        >
+          View Details
+          <ArrowRight size={16} />
+        </motion.button>
+      </div>
       
       <div className="space-y-5">
         {modelScores.map((model, idx) => (
@@ -185,6 +217,7 @@ const ModelScoreChart: React.FC<{
     </motion.div>
   );
 };
+
 
 // Metadata Card Component
 const MetadataCard: React.FC<{
@@ -257,44 +290,250 @@ const Results: React.FC = () => {
   );
 
   const downloadReportPDF = async () => {
-    if (!reportRef.current) return;
+  if (!reportRef.current) return;
 
-    try {
-      const canvas = await html2canvas(reportRef.current, {
-        scale: 2,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        logging: false,
+  try {
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const margin = 20;
+    const contentWidth = pageWidth - 2 * margin;
+    let yPosition = margin;
+
+    // Helper function to add text with word wrap
+    const addText = (text: string, fontSize: number, isBold: boolean = false) => {
+      pdf.setFontSize(fontSize);
+      pdf.setFont('helvetica', isBold ? 'bold' : 'normal');
+      const lines = pdf.splitTextToSize(text, contentWidth);
+      
+      lines.forEach((line: string) => {
+        if (yPosition > pageHeight - margin) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+        pdf.text(line, margin, yPosition);
+        yPosition += fontSize * 0.4;
       });
+      yPosition += 5;
+    };
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-      });
+    // Header with gradient effect (simulated)
+    pdf.setFillColor(34, 211, 238); // Primary color
+    pdf.rect(0, 0, pageWidth, 40, 'F');
+    
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(24);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('DeepfakeGuard Analysis Report', margin, 25);
+    
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`Generated: ${new Date().toLocaleString()}`, margin, 35);
 
-      const imgWidth = 210;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
+    // Reset text color
+    pdf.setTextColor(0, 0, 0);
+    yPosition = 50;
 
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= 297;
+    // Status Section
+    const statusColor = videoData.isFake ? [239, 68, 68] : [16, 185, 129];
+    pdf.setFillColor(...statusColor);
+    pdf.roundedRect(margin, yPosition, contentWidth, 20, 3, 3, 'F');
+    
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(
+      videoData.isFake ? '⚠ DEEPFAKE DETECTED' : '✓ AUTHENTIC VIDEO',
+      pageWidth / 2,
+      yPosition + 12,
+      { align: 'center' }
+    );
+    
+    pdf.setTextColor(0, 0, 0);
+    yPosition += 30;
 
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
+    // Confidence Score
+    pdf.setFillColor(245, 245, 245);
+    pdf.roundedRect(margin, yPosition, contentWidth, 25, 3, 3, 'F');
+    
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Confidence Score:', margin + 10, yPosition + 10);
+    
+    pdf.setFontSize(20);
+    pdf.setTextColor(...statusColor);
+    pdf.text(`${videoData.confidence}%`, margin + 10, yPosition + 20);
+    
+    pdf.setTextColor(0, 0, 0);
+    yPosition += 35;
+
+    // Video Information Section
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('📊 Video Information', margin, yPosition);
+    yPosition += 8;
+
+    pdf.setDrawColor(200, 200, 200);
+    pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += 8;
+
+    const videoInfo = [
+      ['Title:', videoData.title],
+      ['Channel:', videoData.channel],
+      ['Views:', videoData.views],
+      ['Upload Date:', videoData.uploadDate],
+    ];
+
+    pdf.setFontSize(10);
+    videoInfo.forEach(([label, value]) => {
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(label, margin, yPosition);
+      pdf.setFont('helvetica', 'normal');
+      const lines = pdf.splitTextToSize(value, contentWidth - 40);
+      pdf.text(lines, margin + 40, yPosition);
+      yPosition += 7;
+    });
+
+    yPosition += 5;
+
+    // Analysis Metrics Section
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('🔍 Analysis Metrics', margin, yPosition);
+    yPosition += 8;
+
+    pdf.setDrawColor(200, 200, 200);
+    pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += 10;
+
+    const analysisDetails: AnalysisDetail[] = [
+      { label: 'Lip-sync analysis', score: videoData.isFake ? 82 : 15 },
+      { label: 'Facial expression consistency', score: videoData.isFake ? 68 : 88 },
+      { label: 'Temporal coherence', score: videoData.isFake ? 79 : 12 },
+      { label: 'Audio-visual alignment', score: videoData.isFake ? 71 : 25 },
+      { label: 'Frame-level artifacts', score: videoData.isFake ? 85 : 8 },
+      { label: 'Background consistency', score: videoData.isFake ? 62 : 92 },
+    ];
+
+    pdf.setFontSize(10);
+    analysisDetails.forEach((detail) => {
+      if (yPosition > pageHeight - 30) {
         pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= 297;
+        yPosition = margin;
       }
 
-      pdf.save(`deepfake-analysis-${videoData.id}.pdf`);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('Error generating PDF. Please try again.');
+      // Metric label
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(detail.label, margin, yPosition);
+
+      // Score bar background
+      const barWidth = 60;
+      const barHeight = 5;
+      const barX = pageWidth - margin - barWidth - 20;
+      
+      pdf.setFillColor(230, 230, 230);
+      pdf.roundedRect(barX, yPosition - 3, barWidth, barHeight, 2, 2, 'F');
+
+      // Score bar fill
+      const scoreColor = detail.score >= 75 ? [239, 68, 68] : detail.score >= 50 ? [251, 191, 36] : [16, 185, 129];
+      pdf.setFillColor(...scoreColor);
+      pdf.roundedRect(barX, yPosition - 3, (barWidth * detail.score) / 100, barHeight, 2, 2, 'F');
+
+      // Score value
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(...scoreColor);
+      pdf.text(`${detail.score}%`, pageWidth - margin - 15, yPosition);
+      pdf.setTextColor(0, 0, 0);
+
+      yPosition += 10;
+    });
+
+    yPosition += 5;
+
+    // Average Score
+    const averageScore = Math.round(
+      analysisDetails.reduce((sum, detail) => sum + detail.score, 0) / analysisDetails.length
+    );
+
+    pdf.setFillColor(245, 245, 245);
+    pdf.roundedRect(margin, yPosition, contentWidth, 15, 3, 3, 'F');
+    
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Average Analysis Score:', margin + 10, yPosition + 10);
+    
+    pdf.setFontSize(14);
+    pdf.setTextColor(34, 211, 238);
+    pdf.text(`${averageScore} / 100`, pageWidth - margin - 10, yPosition + 10, { align: 'right' });
+    
+    pdf.setTextColor(0, 0, 0);
+    yPosition += 25;
+
+    // Footer Section
+    if (yPosition > pageHeight - 50) {
+      pdf.addPage();
+      yPosition = margin;
     }
-  };
+
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('ℹ️ Additional Information', margin, yPosition);
+    yPosition += 8;
+
+    pdf.setDrawColor(200, 200, 200);
+    pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+    yPosition += 8;
+
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(100, 100, 100);
+    
+    const footerText = [
+      'This report was generated using AI-powered deepfake detection technology.',
+      'Results are based on advanced machine learning models and should be used as guidance.',
+      'For critical decisions, please consult with media forensics experts.',
+      '',
+      `Report ID: DF-${videoData.id}-${Date.now()}`,
+      `Source: ${videoData.sourceLink}`,
+    ];
+
+    footerText.forEach((line) => {
+      if (yPosition > pageHeight - margin) {
+        pdf.addPage();
+        yPosition = margin;
+      }
+      pdf.text(line, margin, yPosition);
+      yPosition += 5;
+    });
+
+    // Page numbers
+    const pageCount = pdf.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(150, 150, 150);
+      pdf.text(
+        `Page ${i} of ${pageCount}`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: 'center' }
+      );
+    }
+
+    // Save PDF
+    pdf.save(`DeepfakeGuard-Report-${videoData.id}-${Date.now()}.pdf`);
+    
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    alert('Error generating PDF. Please try again.');
+  }
+};
+
 
   const handleSourceClick = () => {
     window.open(videoData.sourceLink, '_blank', 'noopener,noreferrer');
@@ -336,7 +575,7 @@ const Results: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-start gap-4">
               <motion.div
                 className="flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center"

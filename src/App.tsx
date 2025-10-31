@@ -22,6 +22,8 @@ import HowItWorks from "./pages/Landing/HowItWorks";
 import Roadmap from "./pages/Landing/RoadMap";
 
 import Contact from "./pages/Landing/Contact";
+import ModelDetails from './pages/ModelDetails';
+import ModelReport from './pages/ModelReport';
 
 function App() {
   return (
@@ -61,6 +63,9 @@ function App() {
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/contact" element={<Contact />} />
+
+        <Route path ="/model-details" element={<ModelDetails/>} />
+        <Route path = '/model-report' element={<ModelReport/>} />
         </Routes>
       </Router>
     </ReportProvider>

@@ -361,46 +361,52 @@ const History: React.FC = () => {
               className="px-3 py-2 rounded-lg text-sm font-medium outline-none transition-all"
               style={{
                 border: `2px solid ${theme.colors.neutral.light}`,
-                color: theme.colors.textPrimary,
+                color: 'black',
                 backgroundColor: 'white',
               }}
             >
-              <option value="all">All Results</option>
-              <option value="fake">Deepfakes</option>
+              <option value="all" style={{color:'black'}}>All Results</option>
+              <option value="fake" style={{color:'black'}}>Deepfakes</option>
               <option value="authentic">Authentic</option>
             </select>
           </div>
 
           {/* Sort */}
-          <div className="mt-4 flex items-center space-x-2">
-            <span className="text-sm font-medium" style={{ color: theme.colors.textSecondary }}>
-              Sort by:
+            <motion.div className="mt-4 flex items-center space-x-2">
+            <span className="text-sm font-medium" style={{ color: theme.colors.textPrimary }}>
+                Sort by:
             </span>
-            <button
-              onClick={() => setSortBy('recent')}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-all ${
-                sortBy === 'recent' ? 'text-white' : ''
-              }`}
-              style={{
+            
+            <motion.button
+                onClick={() => setSortBy('recent')}
+                className="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+                style={{
                 backgroundColor: sortBy === 'recent' ? theme.colors.primary : theme.colors.neutral.lightest,
                 color: sortBy === 'recent' ? 'white' : theme.colors.textPrimary,
-              }}
+                border: `2px solid ${sortBy === 'recent' ? theme.colors.primary : theme.colors.neutral.light}`,
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
             >
-              Recent
-            </button>
-            <button
-              onClick={() => setSortBy('confidence')}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-all ${
-                sortBy === 'confidence' ? 'text-white' : ''
-              }`}
-              style={{
+                Recent
+            </motion.button>
+            
+            <motion.button
+                onClick={() => setSortBy('confidence')}
+                className="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+                style={{
                 backgroundColor: sortBy === 'confidence' ? theme.colors.primary : theme.colors.neutral.lightest,
-                color: sortBy === 'confidence' ? 'white' : theme.colors.textPrimary,
-              }}
+                color:  sortBy === 'confidence' ? 'white' : theme.colors.textPrimary,
+                border: `2px solid ${sortBy === 'confidence' ? theme.colors.primary : theme.colors.neutral.light}`,
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
             >
-              Confidence
-            </button>
-          </div>
+                Confidence
+            </motion.button>
+            </motion.div>
+
+
         </motion.div>
 
         {/* Results Count */}
