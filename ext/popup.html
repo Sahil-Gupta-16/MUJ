@@ -4,49 +4,230 @@
 <head>
     <meta charset="UTF-8">
     <style>
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-gray: #f8f9fa;
+            --gray: #6c757d;
+            --border-color: #dee2e6;
+        }
+
         body {
-            font-family: sans-serif;
-            padding: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding: 0;
+            margin: 0;
             width: 380px;
+            background-color: #fff;
         }
 
-        #status {
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: var(--light-gray);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header img {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+        }
+
+        .header h1 {
             font-size: 1.1em;
-            margin-bottom: 15px;
+            margin: 0;
+            color: #333;
         }
 
-        #result {
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            padding: 10px;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 150px;
-            overflow-y: auto;
-            font-family: monospace;
+        .container {
+            padding: 20px;
         }
 
-        .hidden {
+        .view {
             display: none;
         }
 
-        .buttons {
-            margin-top: 15px;
+        .view.active {
+            display: block;
         }
 
-        button {
+        /* FIX: Explicitly define the .hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* States */
+        #waiting-view p,
+        #processing-view p {
+            font-size: 1.1em;
+            color: var(--gray);
+            text-align: center;
+        }
+
+        #processing-view {
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--primary-color);
+            animation: spin 1s ease infinite;
+            margin: 0 auto 15px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Result View */
+        .result-item {
+            margin-bottom: 14px;
+            font-size: 0.9em;
+        }
+
+        .result-item strong {
+            color: #333;
+            margin-right: 8px;
+        }
+
+        #result-status {
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: white;
+            display: inline-block;
+        }
+
+        #result-status.authentic {
+            background-color: var(--success-color);
+        }
+
+        #result-status.fake {
+            background-color: var(--danger-color);
+        }
+
+        #result-status.error {
+            background-color: var(--gray);
+        }
+
+        #source-info {
+            font-size: 0.85em;
+            color: var(--gray);
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Timestamp Table */
+        #timestamps-list {
+            list-style-type: none;
+            padding: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .timestamp-header,
+        .timestamp-item {
+            display: flex;
+            justify-content: space-between;
             padding: 8px 12px;
-            margin-right: 10px;
+            font-size: 0.9em;
+        }
+
+        .timestamp-header {
+            background-color: var(--light-gray);
+            font-weight: bold;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .timestamp-item:not(:last-child) {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .timestamp-col {
+            width: 45%;
+            text-align: center;
+        }
+
+        /* Buttons */
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button,
+        .button-link {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        #resetBtn {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        #reportBtn {
+            background-color: var(--primary-color);
+            color: white;
         }
     </style>
 </head>
 
 <body>
-    <div id="status">Click on a link on any page.</div>
-    <div id="result" class="hidden"></div>
-    <div class="buttons">
-        <button id="resetBtn" class="hidden">Upload another</button>
-        <button id="closeBtn">Close</button>
+    <div class="header">
+        <img src="logo.png" alt="Extension Logo">
+        <h1>Link Processor</h1>
+    </div>
+
+    <div class="container">
+        <div id="waiting-view" class="view active">
+            <p>Click on a video to analyze it.</p>
+        </div>
+        <div id="processing-view" class="view">
+            <div class="spinner"></div>
+            <p>Analyzing content, please wait...</p>
+        </div>
+
+        <div id="result-view" class="view">
+            <div class="result-item"><strong>Result:</strong><span id="result-status"></span></div>
+            <div class="result-item"><strong>Confidence:</strong><span id="result-confidence"></span></div>
+            <div class="result-item"><strong>Matching Video:</strong><a id="result-matching-video" href="#"
+                    target="_blank"></a></div>
+            <div class="result-item"><strong>Matching Score:</strong><span id="result-matching-score"></span></div>
+            <div class="result-item">
+                <strong>Detected Deepfake Segments:</strong>
+                <ul id="timestamps-list"></ul>
+            </div>
+            <div class="result-item">
+                <strong>Analysis ID:</strong>
+                <span id="result-hash"></span>
+                <div id="source-info"></div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button id="resetBtn" class="hidden">Analyze Another</button>
+            <a id="reportBtn" href="#" target="_blank" class="button-link hidden">Detailed Report</a>
+            <button id="closeBtn">Close</button>
+        </div>
     </div>
     <script src="popup.js"></script>
 </body>

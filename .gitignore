@@ -2,3 +2,4 @@ ignored
 .venv
 __pycache__/
 models
+smarts
